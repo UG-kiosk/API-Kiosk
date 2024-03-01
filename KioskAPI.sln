@@ -1,18 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Api", "Kiosk.Api\Kiosk.Api.csproj", "{FD5E8477-F468-4B34-A5F3-DC4F514D5A98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Api", "src\Kiosk.Api\Kiosk.Api.csproj", "{FD5E8477-F468-4B34-A5F3-DC4F514D5A98}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{14B7F529-F5D0-4F60-9A93-B574B5FB453A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6C29A555-7761-4A01-B65C-37EB0D1F561D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Repositories", "Kiosk.Repositories\Kiosk.Repositories.csproj", "{A8062C3A-5B45-470C-95F1-DC7D84F6C619}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Repositories", "src\Kiosk.Repositories\Kiosk.Repositories.csproj", "{A8062C3A-5B45-470C-95F1-DC7D84F6C619}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Abstractions", "Kiosk.Abstractions\Kiosk.Abstractions.csproj", "{222DC43A-E932-4EB3-AC86-B4B6E280382C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Abstractions", "src\Kiosk.Abstractions\Kiosk.Abstractions.csproj", "{222DC43A-E932-4EB3-AC86-B4B6E280382C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Repositories.Test", "Kiosk.Repositories.Test\Kiosk.Repositories.Test.csproj", "{CF44603C-413F-4897-9CD8-3005A411FAD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Repositories.Test", "test\Kiosk.Repositories.Test\Kiosk.Repositories.Test.csproj", "{CF44603C-413F-4897-9CD8-3005A411FAD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Api.Test", "Kiosk.Api.Test\Kiosk.Api.Test.csproj", "{EFF285ED-750A-4D51-8AF5-C392D8EA07C5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiosk.Api.Test", "test\Kiosk.Api.Test\Kiosk.Api.Test.csproj", "{EFF285ED-750A-4D51-8AF5-C392D8EA07C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
