@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "UMCN91A7Jzg1OOv8hcufRJxtv07FB7epVF7CHNcjs/YC3jxN6SBw866OFFPCLBSDcpuM+ln1UR8ECR3j8zF8FQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Abstractions\\Kiosk.Abstractions.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\okusmierek\\.nuget\\packages\\mongodb.bson\\2.24.0\\mongodb.bson.2.24.0.nupkg.sha512",
+    "C:\\Users\\okusmierek\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\okusmierek\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

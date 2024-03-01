@@ -1,0 +1,12 @@
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\bin\Debug\net8.0\Kiosk.Abstractions.deps.json
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\bin\Debug\net8.0\Kiosk.Abstractions.dll
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\bin\Debug\net8.0\Kiosk.Abstractions.pdb
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\obj\Debug\net8.0\Kiosk.Abstractions.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\obj\Debug\net8.0\Kiosk.Abstractions.AssemblyInfoInputs.cache
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\obj\Debug\net8.0\Kiosk.Abstractions.AssemblyInfo.cs
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\obj\Debug\net8.0\Kiosk.Abstractions.csproj.CoreCompileInputs.cache
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\obj\Debug\net8.0\Kiosk.Abstractions.dll
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\obj\Debug\net8.0\refint\Kiosk.Abstractions.dll
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\obj\Debug\net8.0\Kiosk.Abstractions.pdb
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\obj\Debug\net8.0\ref\Kiosk.Abstractions.dll
+C:\Users\okusmierek\RiderProjects\KioskAPI\Kiosk.Abstractions\obj\Debug\net8.0\Kiosk.Abstractions.csproj.AssemblyReference.cache

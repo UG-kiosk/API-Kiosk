@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "7gRaKBb8VS6dMKokz3ZVmFSwWjqfDDDXXr64KxGckfE=",
+  "Source": "Kiosk.Api",
+  "BasePath": "_content/Kiosk.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

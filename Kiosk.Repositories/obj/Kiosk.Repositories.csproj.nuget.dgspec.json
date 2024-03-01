@@ -1,0 +1,138 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Repositories\\Kiosk.Repositories.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Abstractions\\Kiosk.Abstractions.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Abstractions\\Kiosk.Abstractions.csproj",
+        "projectName": "Kiosk.Abstractions",
+        "projectPath": "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Abstractions\\Kiosk.Abstractions.csproj",
+        "packagesPath": "C:\\Users\\okusmierek\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Abstractions\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\okusmierek\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://automotivemastermind.pkgs.visualstudio.com/_packaging/NuGet/nuget/v3/index.json": {},
+          "https://automotivemastermind.pkgs.visualstudio.com/_packaging/NuGet/nuget/v3/index.json": {},
+          "https://automotivemastermind.pkgs.visualstudio.com/_packaging/core/nuget/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "MongoDB.Bson": {
+              "target": "Package",
+              "version": "[2.24.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Repositories\\Kiosk.Repositories.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Repositories\\Kiosk.Repositories.csproj",
+        "projectName": "Kiosk.Repositories",
+        "projectPath": "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Repositories\\Kiosk.Repositories.csproj",
+        "packagesPath": "C:\\Users\\okusmierek\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Repositories\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\okusmierek\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://automotivemastermind.pkgs.visualstudio.com/_packaging/NuGet/nuget/v3/index.json": {},
+          "https://automotivemastermind.pkgs.visualstudio.com/_packaging/NuGet/nuget/v3/index.json": {},
+          "https://automotivemastermind.pkgs.visualstudio.com/_packaging/core/nuget/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Abstractions\\Kiosk.Abstractions.csproj": {
+                "projectPath": "C:\\Users\\okusmierek\\RiderProjects\\KioskAPI\\Kiosk.Abstractions\\Kiosk.Abstractions.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[2.24.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
