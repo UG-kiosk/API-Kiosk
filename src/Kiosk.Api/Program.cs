@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Kiosk.Repositories;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services;
@@ -21,7 +22,19 @@ builder.Services.AddSingleton(database);
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
-    .AddScoped<IEctsSubjectService, EctsSubjectService>();
+    .AddScoped<IEctsSubjectService, EctsSubjectService>()
+    .AddScoped<IMajorsRepository, MajorsRepository>()
+    .AddScoped<IMajorsService, MajorsService>();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services
+    .AddMvc()
+    .AddJsonOptions(opts =>
+    {
+        var enumConverter = new JsonStringEnumConverter();
+        opts.JsonSerializerOptions.Converters.Add(enumConverter);
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
