@@ -1,7 +1,6 @@
 using AutoMapper;
-using Kiosk.Abstractions.Dtos;
 using Kiosk.Abstractions.Enums;
-using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Major;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
 
@@ -18,27 +17,28 @@ public class MajorsService : IMajorsService
         _mapper = mapper;
     }
     
-    private MajorOutputDto MapTranslatedMajor(Major major, Language language)
+    // maybe it could be done with auto mapper
+    private MajorResponse MapTranslatedMajor(Major major, Language language)
     {
-        var mappedMajor = _mapper.Map<MajorOutputDto>(major);
+        var mappedMajor = _mapper.Map<MajorResponse>(major);
         mappedMajor.Language = language;
 
         switch (language)
         {
-            case Language.PL:
-                mappedMajor.Name = major.PolishDetails.Name;
-                mappedMajor.Content = major.PolishDetails.Content;
+            case Language.Pl:
+                mappedMajor.Name = major.Pl.Name;
+                mappedMajor.Content = major.Pl.Content;
                 break;
-            case Language.EN:
-                mappedMajor.Name = major.EnglishDetails.Name;
-                mappedMajor.Content = major.EnglishDetails.Content;
+            case Language.En:
+                mappedMajor.Name = major.En.Name;
+                mappedMajor.Content = major.En.Content;
                 break;
         }
         
         return mappedMajor;
     }
 
-    public async Task<MajorOutputDto?> GetTranslatedMajor(string majorId, Language language, CancellationToken cancellationToken)
+    public async Task<MajorResponse?> GetTranslatedMajor(string majorId, Language language, CancellationToken cancellationToken)
     {
         var major = await _majorsRepository.GetMajor(majorId, cancellationToken);
         
@@ -50,10 +50,10 @@ public class MajorsService : IMajorsService
         return MapTranslatedMajor(major, language);
     }
 
-    public async Task<IEnumerable<MajorOutputDto>> GetTranslatedMajors(FindMajorsQueryDto findMajorsQueryDto, CancellationToken cancellationToken)
+    public async Task<IEnumerable<MajorResponse>> GetTranslatedMajors(FindMajorsRequest findMajorsRequest, CancellationToken cancellationToken)
     {
-        var majorsList = await _majorsRepository.GetMajors(findMajorsQueryDto, cancellationToken);
+        var majorsList = await _majorsRepository.GetMajors(findMajorsRequest, cancellationToken);
     
-        return majorsList.Select(major => MapTranslatedMajor(major, findMajorsQueryDto.Language));   
+        return majorsList.Select(major => MapTranslatedMajor(major, findMajorsRequest.Language));   
     }
 }

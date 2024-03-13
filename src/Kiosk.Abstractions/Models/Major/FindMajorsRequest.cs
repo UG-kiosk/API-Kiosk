@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
 
-namespace Kiosk.Abstractions.Dtos;
+namespace Kiosk.Abstractions.Models.Major;
 
-public class FindMajorsQueryDto
+public class FindMajorsRequest
 {
     [Required(ErrorMessage = "Language is required.")]
     public Language Language { get; set; }

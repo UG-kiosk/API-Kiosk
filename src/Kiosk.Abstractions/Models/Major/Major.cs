@@ -1,8 +1,9 @@
+using System.Text.Json.Serialization;
 using Kiosk.Abstractions.Enums;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Kiosk.Abstractions.Models;
+namespace Kiosk.Abstractions.Models.Major;
 
 
 public class MajorDetails
@@ -20,15 +21,12 @@ public class Major
     [BsonRepresentation(BsonType.ObjectId)]
     public string? _id { get; set; }
     
-    [BsonElement("pl")]
-    public required MajorDetails PolishDetails { get; set; }
+    public required MajorDetails Pl { get; set; }
     
-    [BsonElement("en")]
-    public required MajorDetails EnglishDetails { get; set; }
+    public required MajorDetails En { get; set; }
     
-    [BsonElement("url")]
     public required string? Url { get; set; }
    
-    [BsonElement("degree")]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public required Degree Degree { get; set; }
 }

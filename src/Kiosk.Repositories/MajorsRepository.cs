@@ -1,7 +1,5 @@
 using System.Text.RegularExpressions;
-using Kiosk.Abstractions.Dtos;
-using Kiosk.Abstractions.Enums;
-using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Major;
 using Kiosk.Repositories.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -22,24 +20,19 @@ public class MajorsRepository : IMajorsRepository
         => await _majors.Find(major => major._id == id)
             .FirstOrDefaultAsync(cancellationToken);
     
-    public async Task<IEnumerable<Major>> GetMajors(FindMajorsQueryDto findMajorsQueryDto, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Major>> GetMajors(FindMajorsRequest findMajorsRequest, CancellationToken cancellationToken)
     {
-        var languageField = findMajorsQueryDto.Language == Language.PL ? "pl" : "en";
-        
         var filter = Builders<Major>.Filter.Empty;
         
-        
-        if (findMajorsQueryDto.Degree != null)
+        if (findMajorsRequest.Degree != null)
         {
-            var degreeString = Enum.GetName(typeof(Degree), findMajorsQueryDto.Degree);
-
-            filter &= Builders<Major>.Filter.Eq("degree", degreeString);   
+            filter &= Builders<Major>.Filter.Eq(major => major.Degree, findMajorsRequest.Degree);
         }
         
-        if (findMajorsQueryDto.Name != null)
+        if (findMajorsRequest.Name != null)
         {
-            filter &= Builders<Major>.Filter.Regex($"{languageField}.name", 
-                new BsonRegularExpression(new Regex(findMajorsQueryDto.Name, RegexOptions.IgnoreCase)));
+            filter &= Builders<Major>.Filter.Regex($"{findMajorsRequest.Language.ToString()}.name", 
+                new BsonRegularExpression(new Regex(findMajorsRequest.Name, RegexOptions.IgnoreCase)));
         }
         
         return await _majors.Find(filter)

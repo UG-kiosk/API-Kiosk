@@ -4,6 +4,7 @@ using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Rewrite;
+using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using Serilog;
 
@@ -35,6 +36,11 @@ builder.Services
         var enumConverter = new JsonStringEnumConverter();
         opts.JsonSerializerOptions.Converters.Add(enumConverter);
     });
+
+var pack = new ConventionPack();
+
+pack.Add(new CamelCaseElementNameConvention()); ConventionRegistry.Register("Camel case convention", pack, t => true);
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,5 +1,6 @@
-using Kiosk.Abstractions.Dtos;
+using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
+using Kiosk.Abstractions.Models.Major;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -23,7 +24,7 @@ public class MajorsController : ControllerBase
     public async Task<IActionResult> GetMajor(
         string id,
         CancellationToken cancellationToken,
-        [FromQuery(Name = "language")] Language language)
+        [FromQuery(Name = "language"), Required] Language language)
 
     {
         try
@@ -44,13 +45,13 @@ public class MajorsController : ControllerBase
     
     [HttpGet]
     public async Task<IActionResult> GetMajors(
-        [FromQuery] FindMajorsQueryDto findMajorsQueryDto,
+        [FromQuery] FindMajorsRequest findMajorsRequest,
         CancellationToken cancellationToken)
     {
         try
         {
             var majorsList = await _majorsService
-                .GetTranslatedMajors(findMajorsQueryDto, cancellationToken);
+                .GetTranslatedMajors(findMajorsRequest, cancellationToken);
             
             return Ok(majorsList);
         }

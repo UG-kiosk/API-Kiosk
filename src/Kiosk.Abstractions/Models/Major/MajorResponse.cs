@@ -1,8 +1,9 @@
+using System.Text.Json.Serialization;
 using Kiosk.Abstractions.Enums;
 
-namespace Kiosk.Abstractions.Dtos;
+namespace Kiosk.Abstractions.Models.Major;
 
-public class MajorOutputDto
+public class MajorResponse
 {
     public string? _id { get; set; }
            
@@ -12,7 +13,9 @@ public class MajorOutputDto
     
     public required string? Content { get; set; }
     
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public required Degree Degree { get; set; }
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public required Language Language { get; set; }
 }
