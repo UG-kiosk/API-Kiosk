@@ -1,3 +1,4 @@
+using System.Collections;
 using Kiosk.Abstractions.Models;
 using Kiosk.Repositories.Interfaces;
 using MongoDB.Driver;
@@ -6,34 +7,61 @@ namespace Kiosk.Repositories;
 
 public class EctsSubjectRepository : IEctsSubjectRepository
 {
-    private readonly string _collectionName = "ectsSubject";
-    private readonly IMongoCollection<EctsSubject> _ectsSubjects;
+    private static readonly string _collectionName = "ectsSubjects";
+    private readonly IMongoCollection<EctsSubjectDocument> _ectsSubjects;
 
     public EctsSubjectRepository(IMongoDatabase mongoDatabase)
     {
-        _ectsSubjects = mongoDatabase.GetCollection<EctsSubject>(_collectionName);
+        _ectsSubjects = mongoDatabase.GetCollection<EctsSubjectDocument>(_collectionName);
     }
 
-    public async Task<IEnumerable<EctsSubject>> GetEctsSubjects(CancellationToken cancellationToken)
+    public async Task<IEnumerable<EctsSubjectDocument>> GetEctsSubjects(CancellationToken cancellationToken)
        => (await _ectsSubjects.FindAsync(_ => true, cancellationToken: cancellationToken)).ToEnumerable();
 
-    public async Task<IEnumerable<EctsSubject>?> GetEctsSubjectsByName(string subject,
-        CancellationToken cancellationToken)
+    public async Task<IEnumerable<EctsSubjectDocument>?> GetEctsSubjectsByName(string subject, CancellationToken cancellationToken)
         => (await _ectsSubjects.FindAsync(r => r.Subject == subject, cancellationToken: cancellationToken))
             .ToEnumerable();
 
-    public async Task CreateEctsSubject(EctsSubject ectsSubject, CancellationToken cancellationToken)
-        => await _ectsSubjects.InsertOneAsync(ectsSubject, cancellationToken: cancellationToken);
+    public async Task CreateEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
+        => await _ectsSubjects.InsertOneAsync(ectsSubjectDocument, cancellationToken: cancellationToken);
 
-    public async Task<EctsSubject?> DeleteEctsSubject(string id, CancellationToken cancellationToken) 
+    public async Task<EctsSubjectDocument?> DeleteEctsSubject(string id, CancellationToken cancellationToken) 
         =>  await _ectsSubjects.FindOneAndDeleteAsync(r => r._id == id, cancellationToken: cancellationToken);
 
-    public async Task<EctsSubject?> UpdateEctsSubject(EctsSubject ectsSubject, CancellationToken cancellationToken)
+    public async Task<EctsSubjectDocument?> UpdateEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
     {
-        var filter = Builders<EctsSubject>.Filter.Eq(r => r._id, ectsSubject._id);
+        var filter = Builders<EctsSubjectDocument>.Filter.Eq(r => r._id, ectsSubjectDocument._id);
+        
         var updatedDocument =
-            await _ectsSubjects.FindOneAndReplaceAsync(filter, ectsSubject, cancellationToken: cancellationToken);
+            await _ectsSubjects.FindOneAndReplaceAsync(filter, ectsSubjectDocument, cancellationToken: cancellationToken);
 
         return updatedDocument;
     }
+
+    public async Task<IEnumerable<string>?> GetMajors(Degree degree, CancellationToken cancellationToken)
+    => (await _ectsSubjects.DistinctAsync(subject => subject.Major, DegreeFilter(degree) , cancellationToken: cancellationToken)).ToEnumerable();
+    
+    public async Task<IEnumerable<EctsSubjectDocument>?> GetSubjectsByMajor(EctsSubjectRequest ectsSubject, CancellationToken cancellationToken)
+    {
+        var yearFilter = Builders<EctsSubjectDocument>.Filter.Where(x => x.RecruitmentYear.Contains(ectsSubject.Year));
+        
+        var updatedDocument = (await _ectsSubjects
+            .FindAsync(MajorOrSpecialityFilter(ectsSubject.Major, ectsSubject.Speciality) & DegreeFilter(ectsSubject.Degree) & yearFilter, cancellationToken: cancellationToken))
+            .ToEnumerable();
+    
+        return updatedDocument;
+    }
+
+    public async Task<IEnumerable<int>?> GetYears(string? major, string? speciality, Degree degree, CancellationToken cancellationToken) => 
+        (await _ectsSubjects.DistinctAsync(e => e.RecruitmentYear.First(), MajorOrSpecialityFilter(major, speciality) & DegreeFilter(degree)))
+        .ToList();
+
+    
+    private FilterDefinition<EctsSubjectDocument> MajorOrSpecialityFilter(string? major, string? speciality) =>
+        Builders<EctsSubjectDocument>.Filter.Where(subject => speciality == null ? subject.Major == major : subject.Speciality == speciality);
+    
+    private FilterDefinition<EctsSubjectDocument> DegreeFilter(Degree degree) =>
+        Builders<EctsSubjectDocument>.Filter.Eq(r => r.Degree, degree);
+    
+    
 }
