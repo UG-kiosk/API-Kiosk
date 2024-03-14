@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Kiosk.Abstractions.Enums;
 
 namespace Kiosk.Abstractions.Models;
 

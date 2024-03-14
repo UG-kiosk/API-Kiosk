@@ -1,4 +1,5 @@
 using System.Collections;
+using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
 
 namespace Kiosk.Repositories.Interfaces;

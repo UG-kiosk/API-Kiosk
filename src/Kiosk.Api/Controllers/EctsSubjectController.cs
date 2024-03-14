@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;

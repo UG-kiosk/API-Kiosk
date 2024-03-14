@@ -3,9 +3,9 @@ using Kiosk.Abstractions.Models;
 
 namespace KioskAPI.Mappers;
 
-public class MajorsProfile : Profile
+public class EctsProfile : Profile
 {
-    public MajorsProfile()
+    public EctsProfile()
     {
         CreateMap<EctsSubjectDocument, SubjectResponse>();
     }

@@ -1,3 +1,5 @@
+using Kiosk.Abstractions.Enums;
+
 namespace Kiosk.Abstractions.Models;
 
 public class BaseEctsSubjectRequest
