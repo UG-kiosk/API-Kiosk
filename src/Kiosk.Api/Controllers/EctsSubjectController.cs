@@ -220,12 +220,11 @@ public class EctsSubjectController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetYears([FromQuery] string major,[FromQuery] string? speciality,[FromQuery] Degree degree, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetYears(BaseEctsSubjectRequest baseEctsSubjectRequest, CancellationToken cancellationToken)
     {
         try
         {
-            //
-            var result = await _ectsSubjectRepository.GetYears(major, speciality, degree, cancellationToken);
+            var result = await _ectsSubjectRepository.GetYears(baseEctsSubjectRequest, cancellationToken);
     
             return result is null ? NotFound() : Ok(result);
         }

@@ -52,8 +52,8 @@ public class EctsSubjectRepository : IEctsSubjectRepository
         return updatedDocument;
     }
 
-    public async Task<IEnumerable<int>?> GetYears(string? major, string? speciality, Degree degree, CancellationToken cancellationToken) => 
-        (await _ectsSubjects.DistinctAsync(e => e.RecruitmentYear.First(), MajorOrSpecialityFilter(major, speciality) & DegreeFilter(degree)))
+    public async Task<IEnumerable<int>?> GetYears(BaseEctsSubjectRequest baseEctsSubjectRequest, CancellationToken cancellationToken) => 
+        (await _ectsSubjects.DistinctAsync(e => e.RecruitmentYear.First(), MajorOrSpecialityFilter(baseEctsSubjectRequest.Major, baseEctsSubjectRequest.Speciality) & DegreeFilter(baseEctsSubjectRequest.Degree)))
         .ToList();
 
     

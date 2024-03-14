@@ -57,12 +57,7 @@ public class EctsSubjectService : IEctsSubjectService
         });
 
         ectsSubjectResponse.SubjectsByYearAndTerm = transformedSubjects;
-
-
-
-
+        
         return ectsSubjectResponse;
-
-
     }
 }
