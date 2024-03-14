@@ -25,7 +25,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
     .AddScoped<IEctsSubjectService, EctsSubjectService>()
     .AddScoped<IMajorsRepository, MajorsRepository>()
-    .AddScoped<IMajorsService, MajorsService>();
+    .AddScoped<IMajorsService, MajorsService>()
+    .AddScoped<ITranslatorService, TranslatorService>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
