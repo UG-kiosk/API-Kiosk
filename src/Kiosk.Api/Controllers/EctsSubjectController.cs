@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
@@ -30,7 +32,7 @@ public class EctsSubjectController : ControllerBase
     [HttpGet]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(EctsSubject), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetEctsSubjects(CancellationToken cancellationToken)
@@ -52,7 +54,7 @@ public class EctsSubjectController : ControllerBase
     }
 
     /// <summary>Adding the ects subject</summary>
-    /// <param name="ectsSubject">New ects subject</param>
+    /// <param name="ectsSubjectDocument">New ects subject</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <response code="200">Ects subject successfully created</response>
     /// <response code="409">Ects subject wasn't created due to a conflict of subject name, degree or major</response>
@@ -61,18 +63,18 @@ public class EctsSubjectController : ControllerBase
     [HttpPost]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(EctsSubject), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> AddEctsSubject(EctsSubject ectsSubject, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _ectsSubjectService.AddEctsSubject(ectsSubject, cancellationToken);
+            var result = await _ectsSubjectService.AddEctsSubject(ectsSubjectDocument, cancellationToken);
 
             return result
                 ? Ok("Created successfully")
-                : Conflict("Ects Subject with the same subject name, degree or major allready exist");
+                : Conflict("Ects Subject with the same subject name, degree or major already exist");
         }
         catch (Exception ex)
         {
@@ -83,12 +85,19 @@ public class EctsSubjectController : ControllerBase
             return Problem();
         }
     }
-
+    
+    /// <summary>Deleting the ects subject</summary>
+    /// <param name="ectsSubjectId">id of subject to delete</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <response code="200">Ects subject successfully deleted</response>
+    /// <response code="500">Internal Server Error</response>
+    /// <response code="404">Not Found</response>
+    /// <returns>The confirmation that the request was processed</returns>
     [HttpDelete("{ectsSubjectId}")]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(EctsSubject), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteEctsSubject(string ectsSubjectId, CancellationToken cancellationToken)
     {
@@ -107,18 +116,26 @@ public class EctsSubjectController : ControllerBase
             return Problem();
         }
     }
-
+    
+    
+    /// <summary>Updating the ects subject</summary>
+    /// <param name="ectsSubjectDocument">updated and existing ectsSubjectDocument</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <response code="200">Ects subject successfully updated</response>
+    /// <response code="500">Internal Server Error</response>
+    /// <response code="404">Not Found</response>
+    /// <returns>The confirmation that the request was processed</returns>
     [HttpPut]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(EctsSubject), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateEctsSubject(EctsSubject ectsSubject, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _ectsSubjectRepository.UpdateEctsSubject(ectsSubject, cancellationToken);
+            var result = await _ectsSubjectRepository.UpdateEctsSubject(ectsSubjectDocument, cancellationToken);
 
             return result is null ? NotFound() : Ok();
         }
@@ -128,6 +145,96 @@ public class EctsSubjectController : ControllerBase
                 "Something went wrong while updating ectsSubject. {ExceptionMessage}",
                 ex.Message);
 
+            return Problem();
+        }
+    }
+    
+    /// <summary>Getting lists of majors by degree</summary>
+    /// <param name="degree">Degree of majors</param>
+    /// <response code="200">The majors have been found successfully</response>
+    /// <response code="500">Internal Server Error</response>
+    /// <response code="404">Not Found</response>
+    /// <returns>The confirmation that the request was processed</returns>
+    [HttpGet("{degree}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetMajors([FromRoute, Required] Degree degree, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _ectsSubjectRepository.GetMajors(degree, cancellationToken);
+
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while getting majors. {ExceptionMessage}",
+                ex.Message);
+
+            return Problem();
+        }
+    }
+    
+    /// <summary>Getting list of ectsSubjects by major</summary>
+    /// <param name="ectsSubjectRequest">EctsSubjectRequest</param>
+    /// <response code="200">The ectsSubjects have been found successfully</response>
+    /// <response code="500">Internal Server Error</response>
+    /// <response code="404">Not Found</response>
+    /// <returns>The confirmation that the request was processed</returns>
+    [HttpGet("/major")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetSubjectsByMajor([FromQuery] EctsSubjectRequest ectsSubjectRequest, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _ectsSubjectService.GetSubjectsByMajor(ectsSubjectRequest, cancellationToken);
+    
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while getting ects subjects. {ExceptionMessage}",
+                ex.Message);
+    
+            return Problem();
+        }
+    }
+    
+    /// <summary>Getting lists of years by major or speciality</summary>
+    /// <param name="ectsSubjectRequest">EctsSubjectRequest</param>
+    /// <response code="200">The years have been found successfully</response>
+    /// <response code="500">Internal Server Error</response>
+    /// <response code="404">Not Found</response>
+    /// <returns>The confirmation that the request was processed</returns>
+    [HttpGet("/years")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetYears(BaseEctsSubjectRequest baseEctsSubjectRequest, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _ectsSubjectRepository.GetYears(baseEctsSubjectRequest, cancellationToken);
+    
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while getting years. {ExceptionMessage}",
+                ex.Message);
+    
             return Problem();
         }
     }

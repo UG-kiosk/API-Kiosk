@@ -4,5 +4,7 @@ namespace KioskAPI.Services.Interfaces;
 
 public interface IEctsSubjectService
 {
-    Task<bool> AddEctsSubject(EctsSubject ectsSubject, CancellationToken cancellationToken);
+    Task<bool> AddEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken);
+    
+    Task<EctsSubjectResponse> GetSubjectsByMajor(EctsSubjectRequest ectsSubjectRequest, CancellationToken cancellationToken);
 }

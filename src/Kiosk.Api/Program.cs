@@ -10,6 +10,10 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var pack = new ConventionPack();
+pack.Add(new CamelCaseElementNameConvention());
+ConventionRegistry.Register("Camel case convention", pack, t => true);
+
 var connectionString = builder.Configuration.GetSection("KioskDatabase:ConnectionString").Value;
 var databaseName = builder.Configuration.GetSection("KioskDatabase:DatabaseName").Value;
 
@@ -19,8 +23,10 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddSingleton(database);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddControllers();
+
+builder.Services.AddControllers().AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });;
 
 builder.Services.AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
     .AddScoped<IEctsSubjectService, EctsSubjectService>()
@@ -28,7 +34,6 @@ builder.Services.AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
     .AddScoped<IMajorsService, MajorsService>()
     .AddScoped<ITranslatorService, TranslatorService>();
 
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services
     .AddMvc()
@@ -38,15 +43,11 @@ builder.Services
         opts.JsonSerializerOptions.Converters.Add(enumConverter);
     });
 
-var pack = new ConventionPack();
-
-pack.Add(new CamelCaseElementNameConvention()); ConventionRegistry.Register("Camel case convention", pack, t => true);
-
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
 
 if (app.Environment.IsDevelopment())
 {
