@@ -20,6 +20,6 @@ public class NewsRepository : INewsRepository
             .FirstOrDefaultAsync(cancellationToken);
 
     public async Task<IEnumerable<News>> GetManyNews(Source? source, CancellationToken cancellationToken)
-        => (await _news.FindAsync(news => source == null || news.Source == source, cancellationToken: cancellationToken))
+        => (await _news.FindAsync(news => source == null || news.Source.ToString() == source.ToString(), cancellationToken: cancellationToken))
             .ToEnumerable();
 }

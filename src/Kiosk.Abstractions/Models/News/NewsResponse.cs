@@ -14,7 +14,7 @@ public class NewsResponse
     
     public required string Link { get; set; }
     
-    public required DateOnly Datetime { get; set; }
+    public required DateTime Datetime { get; set; }
     
     public required string Title { get; set; }
     

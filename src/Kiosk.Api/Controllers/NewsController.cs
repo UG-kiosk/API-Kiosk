@@ -54,7 +54,6 @@ public class NewsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetManyNews(
-        string id,
         CancellationToken cancellationToken,
         [FromQuery(Name = "language"), Required]
         Language language,

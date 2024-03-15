@@ -26,7 +26,7 @@ public class News
     
     public required string Link { get; set; }
     
-    public required DateOnly Datetime { get; set; }
+    public required DateTime Datetime { get; set; }
     
     public required NewsDetails Pl { get; set; }
     
