@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Enums.News;
 
 namespace Kiosk.Abstractions.Models.News;
@@ -26,5 +27,8 @@ public class NewsResponse
     
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public required Category Category { get; set; }
+    
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public required Language Language { get; set; }
 
 }
