@@ -20,6 +20,8 @@ builder.Host.UseSerilog((context, configuration) =>
 
 builder.Services.AddSingleton(database);
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
