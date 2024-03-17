@@ -21,13 +21,18 @@ public class StaffController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetStaff([FromQuery(Name = "language"), Required] Language language,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GetStaff([FromQuery(Name = "language")] [Required] Language language,
+        CancellationToken cancellationToken,
+        [FromQuery(Name = "page")] int page = 1,
+        [FromQuery(Name = "itemsPerPage")] int itemsPerPage = 30,
+        [FromQuery(Name = "name")] string name = "")
     {
         try
         {
-            var response = await _staffService.GetStaff(language, cancellationToken);
-            return Ok(response);
+            var (response, pagination) = await _staffService.GetStaff(language,
+                cancellationToken, page, itemsPerPage, name);
+            
+            return Ok(new { response, pagination});
         }
         catch (Exception exception)
         {

@@ -1,7 +1,9 @@
 using Kiosk.Abstractions.Enums;
+using Kiosk.Abstractions.Models;
 using Kiosk.Abstractions.Models.Staff;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace KioskAPI.Services;
@@ -25,11 +27,24 @@ public class StaffService : IStaffService
         };
     }
     
-    public async Task<IEnumerable<AcademicResponse>> GetStaff(Language language, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<AcademicResponse>, Pagination Pagination)> GetStaff(Language language, 
+        CancellationToken cancellationToken, int page, int itemsPerPage, string name)
     {
         var projection = GetLanguageProjection(language);
-        var staff = await _staffRepository.GetStaff(projection, cancellationToken);
-        return staff.Select(a => new AcademicResponse
+        var filterBuilder = Builders<Academic>.Filter;
+        var filter = !string.IsNullOrEmpty(name) 
+            ? filterBuilder.Regex(a => a.Name, new BsonRegularExpression(name, "i")) 
+            : filterBuilder.Empty;
+        
+        var pagination = new Pagination
+        {
+            Page = page,
+            ItemsPerPage = itemsPerPage
+        };
+    
+        var (staff, updatedPagination) = await _staffRepository.GetStaff(projection, pagination,
+            filter, cancellationToken);
+        var staffResponse = staff.Select(a => new AcademicResponse
         {
             _id = a._id,
             Name = a.Name,
@@ -37,10 +52,13 @@ public class StaffService : IStaffService
             Email = a.Email,
             Content = a[language.ToString()],
             Language = language
-        });
+        }).ToList();
+
+        return (staffResponse, updatedPagination);
     }
     
-    public async Task<AcademicResponse?> GetStaffMember(string academicId, Language language, CancellationToken cancellationToken)
+    public async Task<AcademicResponse?> GetStaffMember(string academicId, Language language, 
+        CancellationToken cancellationToken)
     {
         var projection = GetLanguageProjection(language);
         var academic = await _staffRepository.GetAcademic(academicId, projection, cancellationToken);

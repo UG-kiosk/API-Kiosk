@@ -1,7 +1,6 @@
-using Kiosk.Abstractions.Enums;
+using Kiosk.Abstractions.Models;
 using Kiosk.Abstractions.Models.Staff;
 using Kiosk.Repositories.Interfaces;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Kiosk.Repositories;
@@ -16,11 +15,22 @@ public class StaffRepository : IStaffRepository
         _staff = mongoDatabase.GetCollection<Academic>(_collectionName);
     }
 
-    public async Task<IEnumerable<Academic>> GetStaff(ProjectionDefinition<Academic> projection, 
+    public async Task<(IEnumerable<Academic> Staff, Pagination Pagination)> GetStaff(
+        ProjectionDefinition<Academic> projection,
+        Pagination pagination,
+        FilterDefinition<Academic> filter,
         CancellationToken cancellationToken)
     {
-        return await _staff.Find(new BsonDocument()).Project<Academic>(projection)
+        var staff = await _staff.Find(filter)
+            .Project<Academic>(projection)
+            .Skip((pagination.Page - 1) * pagination.ItemsPerPage)
+            .Limit(pagination.ItemsPerPage)
             .ToListAsync(cancellationToken);
+        
+        var totalStaffRecords = await _staff.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        pagination.TotalPages = Pagination.CalculateTotalPages((int)totalStaffRecords, pagination.ItemsPerPage);
+        pagination.HasNextPage = Pagination.CalculateHasNextPage(pagination.Page, pagination.TotalPages);
+        return (staff, pagination);
     }
     
     public async Task<Academic?> GetAcademic(string academicId, ProjectionDefinition<Academic> projection, 
