@@ -25,13 +25,17 @@ builder.Host.UseSerilog((context, configuration) =>
 builder.Services.AddSingleton(database);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddHttpClient();
 
 builder.Services.AddControllers().AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });;
+
 
 builder.Services.AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
     .AddScoped<IEctsSubjectService, EctsSubjectService>()
     .AddScoped<IMajorsRepository, MajorsRepository>()
     .AddScoped<IMajorsService, MajorsService>()
+    .AddScoped<INewsRepository, NewsRepository>()
+    .AddScoped<INewsService, NewsService>()
     .AddScoped<ITranslatorService, TranslatorService>();
 
 
