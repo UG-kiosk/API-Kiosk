@@ -50,6 +50,6 @@ public class NewsService : INewsService
     {
         var newsList = await _newsRepository.GetManyNews(source, cancellationToken);
 
-        return newsList.Select(news => MapTranslatedNews(news, language));
+        return newsList?.Select(news => MapTranslatedNews(news, language));
     }
 }
