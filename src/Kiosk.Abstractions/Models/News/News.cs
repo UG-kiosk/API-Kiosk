@@ -14,6 +14,7 @@ public class NewsDetails
     public required string Body { get; set; }
 }
 
+[BsonIgnoreExtraElements]
 public class News
 {
     [BsonId]
