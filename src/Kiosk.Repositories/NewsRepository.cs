@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Kiosk.Abstractions.Enums.News;
 using Kiosk.Abstractions.Models.News;
 using Kiosk.Repositories.Interfaces;
@@ -19,7 +20,10 @@ public class NewsRepository : INewsRepository
         => await _news.Find(news => news._id == id)
             .FirstOrDefaultAsync(cancellationToken);
 
-    public async Task<IEnumerable<News>> GetManyNews(Source? source, CancellationToken cancellationToken)
-        => (await _news.FindAsync(news => source == null || news.Source.ToString() == source.ToString(), cancellationToken: cancellationToken))
-            .ToEnumerable();
+    public async Task<IEnumerable<News>?> GetManyNews(Source? source, CancellationToken cancellationToken)
+    {
+        Expression<Func<News, bool>> filter = news => source == null || news.Source.ToString() == source.ToString();
+
+        return (await _news.FindAsync(filter, cancellationToken: cancellationToken)).ToEnumerable();
+    }
 }

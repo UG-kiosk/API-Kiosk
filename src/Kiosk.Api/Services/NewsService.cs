@@ -46,7 +46,7 @@ public class NewsService : INewsService
         return news != null ? MapTranslatedNews(news, language) : null;
     }
 
-    public async Task<IEnumerable<NewsResponse>> GetTranslatedListOfNews(Source? source, Language language, CancellationToken cancellationToken)
+    public async Task<IEnumerable<NewsResponse>?> GetTranslatedListOfNews(Source? source, Language language, CancellationToken cancellationToken)
     {
         var newsList = await _newsRepository.GetManyNews(source, cancellationToken);
 

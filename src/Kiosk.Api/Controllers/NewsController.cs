@@ -30,7 +30,7 @@ public class NewsController : ControllerBase
     public async Task<IActionResult> GetNews(
         string id,
         CancellationToken cancellationToken,
-        [FromQuery(Name = "language"), Required] Language language)
+        [FromQuery, Required] Language language)
     {
         try
         {
@@ -55,15 +55,15 @@ public class NewsController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetManyNews(
         CancellationToken cancellationToken,
-        [FromQuery(Name = "language"), Required]
+        [FromQuery, Required]
         Language language,
-        [FromQuery(Name = "source")] Source? source=null)
+        [FromQuery] Source? source=null)
     {
         try
         {
             var newsList = await _newsService
                 .GetTranslatedListOfNews(source, language, cancellationToken);
-            return Ok(newsList);
+            return newsList is null ? NoContent() : Ok(newsList);
         }
         catch (Exception exception)
         {
