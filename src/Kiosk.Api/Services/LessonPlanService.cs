@@ -43,7 +43,7 @@ public class LessonPlanService : ILessonPlanService
     public async Task<IEnumerable<LessonPlanResponse>?> GetAllLessonsForMajorYear(BaseLessonPlanRequest baseLessonPlanRequest, Language language, CancellationToken cancellationToken)
     {
         var filter = Builders<LessonPlan>.Filter.Where(lessons => 
-                lessons.Name == baseLessonPlanRequest.Major &&
+                lessons.Name == baseLessonPlanRequest.Name &&
                 lessons.Year == baseLessonPlanRequest.Year);
         var lessons = await _lessonPlanRepository.GetLessons(filter, cancellationToken);
         return lessons?.Select(lesson => MapTranslatedLessons(lesson, language));
@@ -52,10 +52,9 @@ public class LessonPlanService : ILessonPlanService
     public async Task<IEnumerable<LessonPlanResponse>?> GetAllLecturesForMajorYear(BaseLessonPlanRequest baseLessonPlanRequest, Language language, CancellationToken cancellationToken)
     {
         var filter = Builders<LessonPlan>.Filter.Where(lessons =>
-                lessons.Name == baseLessonPlanRequest.Major &&
+                lessons.Name == baseLessonPlanRequest.Name &&
                 lessons.Year == baseLessonPlanRequest.Year &&
-                lessons.Groups != null &&
-                lessons.Groups.Any(group => group == "wykład"));
+                lessons.Pl.Type=="wykład");
         var lessons = await _lessonPlanRepository.GetLessons(filter, cancellationToken);
         return lessons?.Select(lesson => MapTranslatedLessons(lesson, language));
     }
@@ -64,7 +63,7 @@ public class LessonPlanService : ILessonPlanService
     {
         var lessonsType = new[] { "all", lessonPlanGroupRequest.Group, "fakultet", "seminarium" };
         var filter = Builders<LessonPlan>.Filter.Where(lessons =>
-            lessons.Name == lessonPlanGroupRequest.Major &&
+            lessons.Name == lessonPlanGroupRequest.Name &&
             lessons.Year == lessonPlanGroupRequest.Year &&
             lessons.Groups != null &&
             lessons.Groups.Any(group => lessonsType.Contains(group)));

@@ -51,7 +51,7 @@ public class NewsController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<NewsResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetManyNews(
         CancellationToken cancellationToken,
@@ -63,7 +63,7 @@ public class NewsController : ControllerBase
         {
             var newsList = await _newsService
                 .GetTranslatedListOfNews(source, language, cancellationToken);
-            return newsList is null ? NoContent() : Ok(newsList);
+            return newsList is null ? NotFound() : Ok(newsList);
         }
         catch (Exception exception)
         {
