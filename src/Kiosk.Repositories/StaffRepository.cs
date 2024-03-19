@@ -1,6 +1,7 @@
 using Kiosk.Abstractions.Models;
 using Kiosk.Abstractions.Models.Staff;
 using Kiosk.Repositories.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Kiosk.Repositories;
@@ -16,11 +17,14 @@ public class StaffRepository : IStaffRepository
     }
 
     public async Task<(IEnumerable<Academic> Staff, Pagination Pagination)> GetStaff(
-        ProjectionDefinition<Academic> projection,
-        Pagination pagination,
-        FilterDefinition<Academic> filter,
-        CancellationToken cancellationToken)
+        ProjectionDefinition<Academic> projection, Pagination pagination, string? name, CancellationToken cancellationToken)
     {
+        var filterBuilder = Builders<Academic>.Filter;
+        if (string.IsNullOrEmpty(name)) name = "";
+        var filter = !string.IsNullOrEmpty(name) 
+            ? filterBuilder.Regex(a => a.Name, new BsonRegularExpression(name, "i")) 
+            : filterBuilder.Empty;
+        
         var staff = await _staff.Find(filter)
             .Project<Academic>(projection)
             .Skip((pagination.Page - 1) * pagination.ItemsPerPage)

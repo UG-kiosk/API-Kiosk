@@ -1,9 +1,9 @@
+using AutoMapper;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
 using Kiosk.Abstractions.Models.Staff;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace KioskAPI.Services;
@@ -11,10 +11,12 @@ namespace KioskAPI.Services;
 public class StaffService : IStaffService
 {
     private readonly IStaffRepository _staffRepository;
+    private readonly IMapper _mapper;
     
-    public StaffService(IStaffRepository staffRepository)
+    public StaffService(IStaffRepository staffRepository, IMapper mapper)
     {
         _staffRepository = staffRepository;
+        _mapper = mapper;
     }
     
     private static ProjectionDefinition<Academic> GetLanguageProjection(Language language)
@@ -27,33 +29,19 @@ public class StaffService : IStaffService
         };
     }
     
-    public async Task<(IEnumerable<AcademicResponse>, Pagination Pagination)> GetStaff(Language language, 
-        CancellationToken cancellationToken, int page, int itemsPerPage, string name)
+    public async Task<(IEnumerable<AcademicResponse>, Pagination Pagination)> GetStaff(Language language, int? page, 
+        int? itemsPerPage, string? name, CancellationToken cancellationToken)
     {
         var projection = GetLanguageProjection(language);
-        var filterBuilder = Builders<Academic>.Filter;
-        var filter = !string.IsNullOrEmpty(name) 
-            ? filterBuilder.Regex(a => a.Name, new BsonRegularExpression(name, "i")) 
-            : filterBuilder.Empty;
-        
         var pagination = new Pagination
         {
-            Page = page,
-            ItemsPerPage = itemsPerPage
+            Page = page.GetValueOrDefault(1),
+            ItemsPerPage = itemsPerPage.GetValueOrDefault(30)
         };
     
         var (staff, updatedPagination) = await _staffRepository.GetStaff(projection, pagination,
-            filter, cancellationToken);
-        var staffResponse = staff.Select(a => new AcademicResponse
-        {
-            _id = a._id,
-            Name = a.Name,
-            Link = a.Link,
-            Email = a.Email,
-            Content = a[language.ToString()],
-            Language = language
-        }).ToList();
-
+            name, cancellationToken);
+        var staffResponse = _mapper.Map<List<AcademicResponse>>(staff, opt => opt.Items["language"] = language);
         return (staffResponse, updatedPagination);
     }
     
@@ -62,14 +50,6 @@ public class StaffService : IStaffService
     {
         var projection = GetLanguageProjection(language);
         var academic = await _staffRepository.GetAcademic(academicId, projection, cancellationToken);
-        return academic is null ? null : new AcademicResponse
-        {
-            _id = academic._id,
-            Name = academic.Name,
-            Link = academic.Link,
-            Email = academic.Email,
-            Content = academic[language.ToString()],
-            Language = language
-        };
+        return academic is null ? null : _mapper.Map<AcademicResponse>(academic, opt => opt.Items["language"] = language);
     }
 }

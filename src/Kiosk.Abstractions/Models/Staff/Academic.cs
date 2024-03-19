@@ -1,3 +1,4 @@
+using Kiosk.Abstractions.Enums;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -20,20 +21,16 @@ public class Academic
     
     public AcademicContent En { get; set; }
     
-    [BsonIgnore]
-    public AcademicContent this[string language]
+    public AcademicContent this[Language language]
     {
         get
         {
-            switch (language)
+            return language switch
             {
-                case "Pl":
-                    return Pl;
-                case "En":
-                    return En;
-                default:
-                    throw new ArgumentException($"Invalid language: {language}");
-            }
+                Language.Pl => Pl,
+                Language.En => En,
+                _ => throw new ArgumentException($"Invalid language: {language}")
+            };
         }
     }
 }

@@ -21,16 +21,13 @@ public class StaffController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetStaff([FromQuery(Name = "language")] [Required] Language language,
-        CancellationToken cancellationToken,
-        [FromQuery(Name = "page")] int page = 1,
-        [FromQuery(Name = "itemsPerPage")] int itemsPerPage = 30,
-        [FromQuery(Name = "name")] string name = "")
-    {
+    public async Task<IActionResult> GetStaff([FromQuery] [Required] Language language, [FromQuery] int? page, 
+        [FromQuery] int? itemsPerPage, [FromQuery] string? name, CancellationToken cancellationToken)
+    { 
         try
         {
-            var (response, pagination) = await _staffService.GetStaff(language,
-                cancellationToken, page, itemsPerPage, name);
+            var (response, pagination) = await _staffService.GetStaff(language, page, 
+                itemsPerPage, name, cancellationToken);
             
             return Ok(new { response, pagination});
         }
@@ -45,9 +42,7 @@ public class StaffController : ControllerBase
     }
     
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetStaffMember(
-        string id,
-        [FromQuery(Name = "language"), Required] Language language,
+    public async Task<IActionResult> GetStaffMember(string id, [FromQuery] [Required] Language language,
         CancellationToken cancellationToken)
     {
         try
