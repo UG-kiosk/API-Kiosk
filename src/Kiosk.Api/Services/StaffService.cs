@@ -29,10 +29,11 @@ public class StaffService : IStaffService
         };
     }
     
-    public async Task<(IEnumerable<AcademicResponse>, Pagination Pagination)> GetStaff(Language language, int? page, 
+    public async Task<(IEnumerable<AcademicToListResponse>, Pagination Pagination)> GetStaff(Language language, int? page, 
         int? itemsPerPage, string? name, CancellationToken cancellationToken)
     {
         var projection = GetLanguageProjection(language);
+        projection = projection.Exclude(a => a.Email);
         var pagination = new Pagination
         {
             Page = page.GetValueOrDefault(1),
@@ -41,7 +42,8 @@ public class StaffService : IStaffService
     
         var (staff, updatedPagination) = await _staffRepository.GetStaff(projection, pagination,
             name, cancellationToken);
-        var staffResponse = _mapper.Map<List<AcademicResponse>>(staff, opt => opt.Items["language"] = language);
+        var staffResponse = _mapper.Map<List<AcademicToListResponse>>(staff, opt => opt.Items["language"] = language);
+        
         return (staffResponse, updatedPagination);
     }
     

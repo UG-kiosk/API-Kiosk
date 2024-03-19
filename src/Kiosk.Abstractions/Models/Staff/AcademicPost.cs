@@ -6,3 +6,5 @@ public class AcademicPost
     
     public required List<string> Faculty { get; set; }
 }
+
+

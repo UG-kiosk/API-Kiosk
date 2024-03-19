@@ -29,7 +29,7 @@ public class StaffController : ControllerBase
             var (response, pagination) = await _staffService.GetStaff(language, page, 
                 itemsPerPage, name, cancellationToken);
             
-            return Ok(new { response, pagination});
+            return Ok(new { response, pagination });
         }
         catch (Exception exception)
         {

@@ -6,7 +6,7 @@ namespace KioskAPI.Services.Interfaces;
 
 public interface IStaffService
 {  
-    Task<(IEnumerable<AcademicResponse>, Pagination Pagination)> GetStaff(Language language, int? page, int? itemsPerPage, string? name, CancellationToken cancellationToken);
+    Task<(IEnumerable<AcademicToListResponse>, Pagination Pagination)> GetStaff(Language language, int? page, int? itemsPerPage, string? name, CancellationToken cancellationToken);
     
     Task<AcademicResponse?> GetStaffMember(string academicId, Language language, CancellationToken cancellationToken);
 }
