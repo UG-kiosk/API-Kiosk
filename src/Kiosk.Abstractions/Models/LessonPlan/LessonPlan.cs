@@ -7,7 +7,7 @@ public class LessonPlanDetails
 {
     public required string Subject { get; set; }
     
-    public required string Type { get; set; }
+    public string? Type { get; set; }
     
     public List<string>? Info { get; set; }
 }
@@ -33,7 +33,7 @@ public class LessonPlan
     
     public required List<string> Teachers { get; set; }
     
-    public required object Class { get; set; }
+    public object? Class { get; set; }
     
     public required LessonPlanDetails Pl { get; set; }
     
