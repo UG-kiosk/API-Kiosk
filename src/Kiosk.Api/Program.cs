@@ -27,10 +27,15 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddControllers().AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });;
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-
-builder.Services.AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
+builder.Services
+    .AddScoped<IStaffRepository, StaffRepository>()
+    .AddScoped<IStaffService, StaffService>()
+    .AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
     .AddScoped<IEctsSubjectService, EctsSubjectService>()
     .AddScoped<IMajorsRepository, MajorsRepository>()
     .AddScoped<IMajorsService, MajorsService>()
