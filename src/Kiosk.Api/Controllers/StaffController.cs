@@ -21,8 +21,11 @@ public class StaffController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetStaff([FromQuery] [Required] Language language, [FromQuery] int? page, 
-        [FromQuery] int? itemsPerPage, [FromQuery] string? name, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetStaff([FromQuery] [Required] Language language, 
+        [FromQuery] int? page, 
+        [FromQuery] int? itemsPerPage,
+        [FromQuery] string? name,
+        CancellationToken cancellationToken)
     { 
         try
         {
