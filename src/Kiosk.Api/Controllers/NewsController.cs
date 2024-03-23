@@ -57,13 +57,16 @@ public class NewsController : ControllerBase
         CancellationToken cancellationToken,
         [FromQuery, Required]
         Language language,
-        [FromQuery] Source? source=null)
+        [FromQuery] Source? source=null,
+        [FromQuery(Name = "page")] int page = 1,
+        [FromQuery(Name = "itemsPerPage")] int itemsPerPage = 30
+        )
     {
         try
         {
-            var newsList = await _newsService
-                .GetTranslatedListOfNews(source, language, cancellationToken);
-            return newsList is null ? NoContent() : Ok(newsList);
+            var (newsList, pagination) = await _newsService
+                .GetTranslatedListOfNews(source, language, page, itemsPerPage, cancellationToken);
+            return newsList is null ? NoContent() : Ok(new { newsList, pagination});
         }
         catch (Exception exception)
         {
