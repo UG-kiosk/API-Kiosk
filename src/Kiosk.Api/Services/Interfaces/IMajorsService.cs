@@ -8,4 +8,6 @@ public interface IMajorsService
 {
     Task<MajorResponse?> GetTranslatedMajor(string majorId, Language language, CancellationToken cancellationToken);
     Task<IEnumerable<MajorResponse>> GetTranslatedMajors(FindMajorsRequest findMajorsRequest, CancellationToken cancellationToken);
+    // Task<MajorResponse?> DeleteMajor(string majorId, CancellationToken cancellationToken);
+    Task CreateMajor(IEnumerable<CreateMajorRequest> createMajorsRequest, CancellationToken cancellationToken);
 }
