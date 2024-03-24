@@ -61,13 +61,12 @@ public class MajorsService : IMajorsService
         return majorsList.Select(major => MapTranslatedMajor(major, findMajorsRequest.Language));   
     }
 
-    public async Task CreateMajor(IEnumerable<CreateMajorRequest> createMajorsRequest,
+    public async Task CreateMajors(IEnumerable<CreateMajorRequest> createMajorsRequest,
         CancellationToken cancellationToken)
     {
         var (nativeLanguageMajors, translationResults) = await TranslateMajors(createMajorsRequest, cancellationToken);
-
         var mappedMajors = MapTranslatedMajorsWithNative(nativeLanguageMajors, translationResults, createMajorsRequest);
-        
+
         await _majorsRepository.CreateMajors(mappedMajors, cancellationToken);
     }
 
@@ -90,8 +89,8 @@ public class MajorsService : IMajorsService
                 
                 var majorDocument = new MajorDocument
                 {
-                    Pl = createMajorDto.MajorDetails,
-                    En = translatedMajor.Translations[Language.En],
+                    Pl = createMajorDto.SourceLanguage == Language.Pl ? createMajorDto.MajorDetails : translatedMajor.Translations[Language.Pl],
+                    En = createMajorDto.SourceLanguage == Language.En ? createMajorDto.MajorDetails : translatedMajor.Translations[Language.En],
                     Degree = createMajorDto.Degree,
                     Url = createMajorDto.Url
                 };

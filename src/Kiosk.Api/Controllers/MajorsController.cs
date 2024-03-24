@@ -72,7 +72,7 @@ public class MajorsController : ControllerBase
     {
         try
         {
-            await _majorsService.CreateMajor(createMajorsRequest, cancellationToken);
+            await _majorsService.CreateMajors(createMajorsRequest, cancellationToken);
             
             return Ok();
         }
