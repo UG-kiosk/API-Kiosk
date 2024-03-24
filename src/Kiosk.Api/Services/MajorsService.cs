@@ -5,7 +5,6 @@ using Kiosk.Abstractions.Models.Major;
 using Kiosk.Abstractions.Models.Translation;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
-using MongoDB.Driver.Linq;
 
 namespace KioskAPI.Services;
 
@@ -89,8 +88,10 @@ public class MajorsService : IMajorsService
                 
                 var majorDocument = new MajorDocument
                 {
-                    Pl = createMajorDto.SourceLanguage == Language.Pl ? createMajorDto.MajorDetails : translatedMajor.Translations[Language.Pl],
-                    En = createMajorDto.SourceLanguage == Language.En ? createMajorDto.MajorDetails : translatedMajor.Translations[Language.En],
+                    Pl = createMajorDto.SourceLanguage == Language.Pl ?
+                        createMajorDto.MajorDetails : translatedMajor.Translations[Language.Pl],
+                    En = createMajorDto.SourceLanguage == Language.En ?
+                        createMajorDto.MajorDetails : translatedMajor.Translations[Language.En],
                     Degree = createMajorDto.Degree,
                     Url = createMajorDto.Url
                 };
