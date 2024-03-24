@@ -26,6 +26,7 @@ public class NewsRepository : INewsRepository
         Expression<Func<News, bool>> filter = news => source == null || news.Source.ToString() == source.ToString();
 
         var news = await _news.Find(filter).Skip((pagination.Page - 1) * pagination.ItemsPerPage)
+            .SortByDescending(news => news.Datetime)
             .Limit(pagination.ItemsPerPage)
             .ToListAsync(cancellationToken);
         var totalStaffRecords = await _news.CountDocumentsAsync(filter, cancellationToken: cancellationToken);

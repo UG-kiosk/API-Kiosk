@@ -64,9 +64,9 @@ public class NewsController : ControllerBase
     {
         try
         {
-            var (newsList, pagination) = await _newsService
+            var (content, pagination) = await _newsService
                 .GetTranslatedListOfNews(source, language, page, itemsPerPage, cancellationToken);
-            return newsList is null ? NoContent() : Ok(new { newsList, pagination});
+            return content is null ? NoContent() : Ok(new { content, pagination});
         }
         catch (Exception exception)
         {
