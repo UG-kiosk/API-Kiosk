@@ -1,5 +1,5 @@
 using Kiosk.Abstractions.Enums;
-using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Abstractions.Models.Staff;
 
 namespace KioskAPI.Services.Interfaces;

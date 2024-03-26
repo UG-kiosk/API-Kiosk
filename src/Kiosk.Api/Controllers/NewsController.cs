@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Enums.News;
 using Kiosk.Abstractions.Models.News;
+using Kiosk.Abstractions.Models.Pagination;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -55,17 +56,15 @@ public class NewsController : ControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetManyNews(
         CancellationToken cancellationToken,
-        [FromQuery, Required]
-        Language language,
-        [FromQuery] Source? source=null,
-        [FromQuery(Name = "page")] int page = 1,
-        [FromQuery(Name = "itemsPerPage")] int itemsPerPage = 30
+        [FromQuery, Required] Language language,
+        [FromQuery] PaginationRequest paginationRequest,
+        [FromQuery] Source? source=null
         )
     {
         try
         {
             var (content, pagination) = await _newsService
-                .GetTranslatedListOfNews(source, language, page, itemsPerPage, cancellationToken);
+                .GetTranslatedListOfNews(source, language, paginationRequest, cancellationToken);
             return content is null ? NoContent() : Ok(new { content, pagination});
         }
         catch (Exception exception)

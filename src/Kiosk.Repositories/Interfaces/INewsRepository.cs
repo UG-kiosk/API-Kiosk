@@ -1,5 +1,5 @@
 using Kiosk.Abstractions.Enums.News;
-using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Abstractions.Models.News;
 
 namespace Kiosk.Repositories.Interfaces;

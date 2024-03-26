@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Kiosk.Abstractions.Enums.News;
-using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Abstractions.Models.News;
 using Kiosk.Repositories.Interfaces;
 using MongoDB.Driver;
@@ -29,6 +29,7 @@ public class NewsRepository : INewsRepository
             .SortByDescending(news => news.Datetime)
             .Limit(pagination.ItemsPerPage)
             .ToListAsync(cancellationToken);
+        
         var totalStaffRecords = await _news.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         pagination.TotalPages = Pagination.CalculateTotalPages((int)totalStaffRecords, pagination.ItemsPerPage);
         pagination.HasNextPage = Pagination.CalculateHasNextPage(pagination.Page, pagination.TotalPages);
