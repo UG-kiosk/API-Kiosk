@@ -1,6 +1,6 @@
 using AutoMapper;
 using Kiosk.Abstractions.Enums;
-using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Abstractions.Models.Staff;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;

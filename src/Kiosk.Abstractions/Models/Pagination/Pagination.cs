@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Kiosk.Abstractions.Models;
+namespace Kiosk.Abstractions.Models.Pagination;
 
 public class Pagination
 {

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Enums.News;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Abstractions.Models.News;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
@@ -46,10 +47,16 @@ public class NewsService : INewsService
         return news != null ? MapTranslatedNews(news, language) : null;
     }
 
-    public async Task<IEnumerable<NewsResponse>?> GetTranslatedListOfNews(Source? source, Language language, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<NewsResponse>?, Pagination Pagination)> GetTranslatedListOfNews(Source? source, Language language, PaginationRequest paginationRequest, CancellationToken cancellationToken)
     {
-        var newsList = await _newsRepository.GetManyNews(source, cancellationToken);
+        var pagination = new Pagination
+        {
+            Page = paginationRequest.Page,
+            ItemsPerPage = paginationRequest.ItemsPerPage
+        };
+        
+        var (newsList, updatedPagination) = await _newsRepository.GetManyNews(source, pagination, cancellationToken);
 
-        return newsList.Select(news => MapTranslatedNews(news, language));
+        return (newsList.Select(news => MapTranslatedNews(news, language)), updatedPagination);
     }
 }
