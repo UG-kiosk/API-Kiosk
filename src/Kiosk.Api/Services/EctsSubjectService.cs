@@ -1,6 +1,8 @@
 using AutoMapper;
+using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
 using Kiosk.Repositories.Interfaces;
+using KioskAPI.Services.Helpers;
 using KioskAPI.Services.Interfaces;
 using ILogger = Serilog.ILogger;
 
@@ -34,6 +36,18 @@ public class EctsSubjectService : IEctsSubjectService
 
         return true;
     }
+    
+    public async Task<IEnumerable<string>?> GetMajorsOrSpecialities(Degree degree, string? major, CancellationToken cancellationToken)
+    {
+        var result = major is null
+            ? await _ectsSubjectRepository.GetMajors(degree, cancellationToken)
+            : await _ectsSubjectRepository.GetSpecialities(degree, major, cancellationToken);
+            
+
+        return result;
+    }
+    
+    
 
     public async Task<EctsSubjectResponse?> GetSubjectsByMajor(EctsSubjectRequest ectsSubjectRequest, CancellationToken cancellationToken)
     {
@@ -48,16 +62,34 @@ public class EctsSubjectService : IEctsSubjectService
         };
 
         var groupedSubjects = ectsSubjectDocuments.GroupBy(e => new { e.Year, e.Term }).ToList();
-
-        var transformedSubjects = groupedSubjects.Select(x => new SubjectsByYearAndTerm()
+        
+        var transformedSubjects = groupedSubjects.Select(x =>
         {
-            Year = x.Key.Year,
-            Term = x.Key.Term,
-            Subjects = x.Select(subject => _mapper.Map<SubjectResponse>(subject))
+            var subjectByYearAndTerm = new SubjectsByYearAndTerm()
+            {
+                Year = x.Key.Year,
+                Term = x.Key.Term,
+                Subjects = x.Select(subject => _mapper.Map<SubjectResponse>(subject)).OrderBy(x=>x.Subject)
+            };
+
+            var sum = new SubjectResponse()
+            {
+                Subject = "Razem",
+                Ects = x.Sum(x => x.Ects),
+                LabsHours = x.Sum(x => x.LabsHours),
+                LectureHours = x.Sum(x => x.LectureHours),
+                RecitationHours = x.Sum(x => x.RecitationHours),
+                Pass = ""
+            };
+
+            subjectByYearAndTerm.Subjects = subjectByYearAndTerm.Subjects.Append(sum);
+
+            return subjectByYearAndTerm;
         });
 
-        ectsSubjectResponse.SubjectsByYearAndTerm = transformedSubjects;
+        ectsSubjectResponse.SubjectsByYearAndTerm = transformedSubjects.OrderBy(x => x.Term);
         
         return ectsSubjectResponse;
     }
+    
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
 using Kiosk.Repositories.Interfaces;
@@ -161,11 +162,11 @@ public class EctsSubjectController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetMajors([FromRoute, Required] Degree degree, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMajors([FromRoute, Required] Degree degree,[FromQuery, Optional] string? major, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _ectsSubjectRepository.GetMajors(degree, cancellationToken);
+            var result = await _ectsSubjectService.GetMajorsOrSpecialities(degree, major, cancellationToken);
 
             return result is null ? NotFound() : Ok(result);
         }
@@ -185,7 +186,7 @@ public class EctsSubjectController : ControllerBase
     /// <response code="500">Internal Server Error</response>
     /// <response code="404">Not Found</response>
     /// <returns>The confirmation that the request was processed</returns>
-    [HttpGet("/major")]
+    [HttpGet("major")]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
@@ -215,17 +216,18 @@ public class EctsSubjectController : ControllerBase
     /// <response code="500">Internal Server Error</response>
     /// <response code="404">Not Found</response>
     /// <returns>The confirmation that the request was processed</returns>
-    [HttpGet("/years")]
+    [HttpGet("years")]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IEnumerable<int>), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetYears(BaseEctsSubjectRequest baseEctsSubjectRequest, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetYears([FromQuery, Required] BaseEctsSubjectRequest baseEctsSubjectRequest, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _ectsSubjectRepository.GetYears(baseEctsSubjectRequest, cancellationToken);
+            var result = (await _ectsSubjectRepository.GetYears(baseEctsSubjectRequest, cancellationToken))
+                .OrderDescending();
     
             return result is null ? NotFound() : Ok(result);
         }

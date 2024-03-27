@@ -21,4 +21,6 @@ public interface IEctsSubjectRepository
     Task<IEnumerable<EctsSubjectDocument>?> GetSubjectsByMajor(EctsSubjectRequest ectsSubject, CancellationToken cancellationToken);
 
     Task<IEnumerable<int>?> GetYears(BaseEctsSubjectRequest baseEctsSubjectRequest, CancellationToken cancellationToken);
+
+    Task<IEnumerable<string?>?> GetSpecialities(Degree degree, string major, CancellationToken cancellationToken);
 }

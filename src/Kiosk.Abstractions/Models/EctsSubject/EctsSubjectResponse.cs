@@ -19,7 +19,7 @@ public class SubjectsByYearAndTerm
 {
     [Range(1, 6)] public required int Term { get; set; }
 
-    [Range(1, 3)] public required int Year { get; set; }
+    [Range(1, 3)] public required Year Year { get; set; }
     
     public required IEnumerable<SubjectResponse> Subjects { get; set; }
 }
