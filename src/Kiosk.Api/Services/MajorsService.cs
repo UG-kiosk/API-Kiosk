@@ -63,80 +63,51 @@ public class MajorsService : IMajorsService
     public async Task CreateMajors(IEnumerable<CreateMajorRequest> createMajorsRequest,
         CancellationToken cancellationToken)
     {
-        var (nativeLanguageMajors, translationResults) = await TranslateMajors(createMajorsRequest, cancellationToken);
-        var mappedMajors = MapTranslatedMajorsWithNative(nativeLanguageMajors, translationResults, createMajorsRequest);
-
+        var mappedMajors = await TranslateMajors(createMajorsRequest, cancellationToken);
         await _majorsRepository.CreateMajors(mappedMajors, cancellationToken);
     }
 
-    private IEnumerable<MajorDocument> MapTranslatedMajorsWithNative(
-        List<TranslationRequest<MajorDetails>> nativeLanguageMajors,
-        IEnumerable<TranslationResponse<MajorDetails>>[] translationResults,
-        IEnumerable<CreateMajorRequest> createMajorsRequest
-    )
-    {
-        var mappedMajors = new List<MajorDocument>();
-        
-        foreach (var languageTranslationGroup in translationResults)
-        {
-            foreach (var translatedMajor in languageTranslationGroup)
-            {
-                var nativeLanguageMajor = nativeLanguageMajors.FirstOrDefault(
-                    m => m.UniqueKey == translatedMajor.UniqueKey);
-                var createMajorDto = createMajorsRequest.FirstOrDefault(
-                    m => m.MajorDetails.Name == nativeLanguageMajor.TranslationPayload.Name);
-                
-                var majorDocument = new MajorDocument
-                {
-                    Pl = createMajorDto.SourceLanguage == Language.Pl ?
-                        createMajorDto.MajorDetails : translatedMajor.Translations[Language.Pl],
-                    En = createMajorDto.SourceLanguage == Language.En ?
-                        createMajorDto.MajorDetails : translatedMajor.Translations[Language.En],
-                    Degree = createMajorDto.Degree,
-                    Url = createMajorDto.Url
-                };
-                
-                mappedMajors.Add(majorDocument);
-            }
-        }
-
-        return mappedMajors;
-    }
-    
-    private async Task<(
-        List<TranslationRequest<MajorDetails>> nativeLanguageMajors,
-        IEnumerable<TranslationResponse<MajorDetails>>[] translationResults
-        )> TranslateMajors(
-        IEnumerable<CreateMajorRequest> createMajorsRequest, 
+    private async Task<IEnumerable<MajorDocument>> TranslateMajors(
+        IEnumerable<CreateMajorRequest> createMajorsRequest,
         CancellationToken cancellationToken)
     {
         var groupedByLanguage = createMajorsRequest.GroupBy(request => request.SourceLanguage);
+        ImmutableList<Language> supportedLanguages = new List<Language> { Language.En, Language.Pl }.ToImmutableList();
 
-        var nativeLanguageMajors = new List<TranslationRequest<MajorDetails>>();
-        var translatedMajors = new List<Task<IEnumerable<TranslationResponse<MajorDetails>>>>();
-
-        ImmutableList<Language> supportedLanguages = ImmutableList.Create(Language.En, Language.Pl);
-
-        foreach (var majorLanguageGroup in groupedByLanguage)
+        var translationTasks = groupedByLanguage.Select(async majorLanguageGroup =>
         {
             var translationContent = majorLanguageGroup.Select(majorGroup => new TranslationRequest<MajorDetails>
             {
                 UniqueKey = Guid.NewGuid().ToString(),
                 TranslationPayload = majorGroup.MajorDetails
             }).ToList();
-            nativeLanguageMajors.AddRange(translationContent);
 
-            var translationTask = _translatorService.Translate(
+            var translationTask = await _translatorService.Translate(
                 translationContent,
                 majorLanguageGroup.Key,
                 supportedLanguages.Where(language => language != majorLanguageGroup.Key),
                 cancellationToken);
 
-            translatedMajors.Add(translationTask);
-        }
-        
-        var translationResults = await Task.WhenAll(translatedMajors);
-    
-        return (nativeLanguageMajors, translationResults);
+            return translationTask.Select(translatedMajor =>
+            {
+                var nativeLanguageMajor = translationContent.FirstOrDefault(
+                    m => m.UniqueKey == translatedMajor.UniqueKey);
+                var createMajorDto = createMajorsRequest.FirstOrDefault(
+                    m => m.MajorDetails.Name == nativeLanguageMajor!.TranslationPayload.Name);
+
+                return new MajorDocument
+                {
+                    Pl = createMajorDto!.SourceLanguage == Language.Pl ?
+                        createMajorDto.MajorDetails : translatedMajor.Translations[Language.Pl],
+                    En = createMajorDto.SourceLanguage == Language.En ?
+                        createMajorDto.MajorDetails : translatedMajor.Translations[Language.En],
+                    Degree = createMajorDto.Degree,
+                    Url = createMajorDto.Url
+                };
+            });
+        });
+
+        var translationResults = await Task.WhenAll(translationTasks);
+        return translationResults.SelectMany(x => x);
     }
 }
