@@ -8,6 +8,6 @@ public class MajorsProfile : Profile
 {
     public MajorsProfile()
     {
-        CreateMap<Major, MajorResponse>();
+        CreateMap<MajorDocument, MajorResponse>();
     }
 }

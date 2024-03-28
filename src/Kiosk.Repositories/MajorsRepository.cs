@@ -9,29 +9,29 @@ namespace Kiosk.Repositories;
 public class MajorsRepository : IMajorsRepository
 {
     private readonly string _collectionName = "majors";
-    private readonly IMongoCollection<Major> _majors;
+    private readonly IMongoCollection<MajorDocument> _majors;
     
     public MajorsRepository(IMongoDatabase mongoDatabase)
     {
-        _majors = mongoDatabase.GetCollection<Major>(_collectionName);
+        _majors = mongoDatabase.GetCollection<MajorDocument>(_collectionName);
     }
 
-    public async Task<Major?> GetMajor(string id, CancellationToken cancellationToken)
+    public async Task<MajorDocument?> GetMajor(string id, CancellationToken cancellationToken)
         => await _majors.Find(major => major._id == id)
             .FirstOrDefaultAsync(cancellationToken);
     
-    public async Task<IEnumerable<Major>> GetMajors(FindMajorsRequest findMajorsRequest, CancellationToken cancellationToken)
+    public async Task<IEnumerable<MajorDocument>> GetMajors(FindMajorsRequest findMajorsRequest, CancellationToken cancellationToken)
     {
-        var filter = Builders<Major>.Filter.Empty;
+        var filter = Builders<MajorDocument>.Filter.Empty;
         
         if (findMajorsRequest.Degree != null)
         {
-            filter &= Builders<Major>.Filter.Eq(major => major.Degree, findMajorsRequest.Degree);
+            filter &= Builders<MajorDocument>.Filter.Eq(major => major.Degree, findMajorsRequest.Degree);
         }
         
         if (findMajorsRequest.Name != null)
         {
-            filter &= Builders<Major>.Filter.Regex($"{findMajorsRequest.Language.ToString()}.name", 
+            filter &= Builders<MajorDocument>.Filter.Regex($"{findMajorsRequest.Language.ToString()}.name", 
                 new BsonRegularExpression(new Regex(findMajorsRequest.Name, RegexOptions.IgnoreCase)));
         }
         
@@ -39,6 +39,14 @@ public class MajorsRepository : IMajorsRepository
             .ToListAsync(cancellationToken);
     }
     
-    public async Task<Major?> DeleteMajor(string id, CancellationToken cancellationToken)
+    public async Task<MajorDocument?> DeleteMajor(string id, CancellationToken cancellationToken)
         => await _majors.FindOneAndDeleteAsync(major => major._id == id, cancellationToken: cancellationToken);
+    
+    public async Task CreateMajor(MajorDocument majorDocument, CancellationToken cancellationToken) =>
+        await _majors.InsertOneAsync(majorDocument, cancellationToken: cancellationToken);
+    
+    public async Task CreateMajors(IEnumerable<MajorDocument> majorDocuments, CancellationToken cancellationToken)
+    {
+        await _majors.InsertManyAsync(majorDocuments, cancellationToken: cancellationToken);
+    }
 }

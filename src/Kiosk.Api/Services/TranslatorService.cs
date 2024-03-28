@@ -1,4 +1,5 @@
 using Kiosk.Abstractions.Enums;
+using Kiosk.Abstractions.Models.Translation;
 using KioskAPI.Services.Interfaces;
 
 namespace KioskAPI.Services;
@@ -12,21 +13,11 @@ public class TranslatorService : ITranslatorService
         _httpClient = httpClient;
     }
 
-      public async Task<IEnumerable<T>> Translate<T>(IEnumerable<T> text, Language sourceLanguage, IEnumerable<Language> targetLanguages, CancellationToken cancellationToken)
+      public async Task<IEnumerable<TranslationResponse<T>>> Translate<T>(IEnumerable<TranslationRequest<T>> translationContent, Language sourceLanguage, IEnumerable<Language> targetLanguages, CancellationToken cancellationToken)
     {
-        var azureTranslatorRequest = CreateAzureTranslatorRequest(text);
         var requestUrl = BuildRequestUrl();
-        var response = await SendTranslationRequest(requestUrl, azureTranslatorRequest, sourceLanguage, targetLanguages, cancellationToken);
-        return await GetTranslatedResults<T>(response);
-    }
-
-    private List<Dictionary<string, string>> CreateAzureTranslatorRequest<T>(IEnumerable<T> text)
-    {
-        return text.Select(item => new Dictionary<string, string>
-            {
-                { "text", item.ToString() }
-            })
-            .ToList();
+        var response = await SendTranslationRequest<T>(requestUrl, translationContent, sourceLanguage, targetLanguages, cancellationToken);
+        return await GetTranslatedResults<T>(response, targetLanguages);
     }
 
     private string BuildRequestUrl()
@@ -36,7 +27,7 @@ public class TranslatorService : ITranslatorService
         return apiUrl.TrimEnd('/') + endpoint;
     }
 
-    private async Task<HttpResponseMessage> SendTranslationRequest(string requestUrl, List<Dictionary<string, string>> azureTranslatorRequest, Language sourceLanguage, IEnumerable<Language> targetLanguages, CancellationToken cancellationToken)
+    private async Task<HttpResponseMessage> SendTranslationRequest<T>(string requestUrl, IEnumerable<TranslationRequest<T>> translationContent, Language sourceLanguage, IEnumerable<Language> targetLanguages, CancellationToken cancellationToken)
     {
         var queryParams = new Dictionary<string, string>
         {
@@ -47,12 +38,12 @@ public class TranslatorService : ITranslatorService
 
         requestUrl += "?" + queryString;
 
-        return await _httpClient.PostAsJsonAsync(requestUrl, azureTranslatorRequest, cancellationToken);
+        return await _httpClient.PostAsJsonAsync(requestUrl, translationContent, cancellationToken);
     }
 
-    private async Task<IEnumerable<T>> GetTranslatedResults<T>(HttpResponseMessage response)
+    private async Task<IEnumerable<TranslationResponse<T>>> GetTranslatedResults<T>(HttpResponseMessage response, IEnumerable<Language> targetLanguages)
     {
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<IEnumerable<T>>();
+        return await response.Content.ReadFromJsonAsync<IEnumerable<TranslationResponse<T>>>();
     }
 }
