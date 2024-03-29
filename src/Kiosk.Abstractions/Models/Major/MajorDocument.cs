@@ -8,14 +8,12 @@ namespace Kiosk.Abstractions.Models.Major;
 
 public class MajorDetails
 {
-    [BsonElement("name")]
     public required string Name { get; set; }
     
-    [BsonElement("content")]
     public required string? Content { get; set; }
 }
 
-public class Major
+public class MajorDocument
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

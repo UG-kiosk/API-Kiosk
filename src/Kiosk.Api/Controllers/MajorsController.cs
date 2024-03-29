@@ -64,4 +64,25 @@ public class MajorsController : ControllerBase
             return Problem();
         }
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> CreateMajors(
+        [FromBody] List<CreateMajorRequest> createMajorsRequest,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _majorsService.CreateMajors(createMajorsRequest, cancellationToken);
+            
+            return Ok();
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while creating major. {ExceptionMessage}",
+                exception.Message);
+            
+            return Problem();
+        }
+    }
 }
