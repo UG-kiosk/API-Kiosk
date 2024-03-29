@@ -5,5 +5,7 @@ namespace Kiosk.Repositories.Interfaces;
 
 public interface ILessonPlanRepository
 {
-    Task<IEnumerable<LessonPlan>?> GetLessons(FilterDefinition<LessonPlan> filter, CancellationToken cancellationToken);
+    Task<IEnumerable<LessonPlan>?> GetAllLecturesForMajorYear(GetLessonsPlanRequestLectures getLessonsPlanRequestLectures, CancellationToken cancellationToken);
+    Task<IEnumerable<LessonPlan>?> GetAllLessonsForMajorYearGroup(GetLessonPlanRequest getLessonPlanRequest, CancellationToken cancellationToken);
+
 }

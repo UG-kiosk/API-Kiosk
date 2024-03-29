@@ -1,6 +1,6 @@
 namespace Kiosk.Abstractions.Models.LessonPlan;
 
-public class BaseLessonPlanRequest
+public class GetLessonsPlanRequestLectures
 {
     public required string Name { get; set; }
     

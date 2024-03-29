@@ -19,50 +19,22 @@ public class LessonPlanController : ControllerBase
         _logger = logger;
         _lessonPlanService = lessonPlanService;
     }
-
-    [HttpGet("{name}/{year}")]
-    [Consumes("application/json")]
-    [Produces("application/json")]
-    [ProducesResponseType(typeof(IEnumerable<LessonPlanResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetAllLessonsForMajorYear(
-        [FromRoute] BaseLessonPlanRequest baseLessonPlanRequest,
-        [FromQuery, Required] Language language,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var lessonsList = await _lessonPlanService
-                .GetAllLessonsForMajorYear(baseLessonPlanRequest, language, cancellationToken);
-            
-            return lessonsList is null ? NotFound() : Ok(lessonsList);
-        }
-        catch (Exception exception)
-        {
-            _logger.Error(exception,
-                "Something went wrong while getting lessons. {ExceptionMessage}",
-                exception.Message);
-
-            return Problem();
-        }
-    }
     
-    [HttpGet("{name}/{year}/lectures")]
+    [HttpGet("lectures")]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(IEnumerable<LessonPlanResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<GetLessonPlanResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllLecturesForMajorYear(
-        [FromRoute] BaseLessonPlanRequest baseLessonPlanRequest,
+        [FromQuery] GetLessonsPlanRequestLectures getLessonsPlanRequestLectures,
         [FromQuery, Required] Language language,
         CancellationToken cancellationToken)
     {
         try
         {
             var lessonsList = await _lessonPlanService
-                .GetAllLecturesForMajorYear(baseLessonPlanRequest, language, cancellationToken);
+                .GetAllLecturesForMajorYear(getLessonsPlanRequestLectures, language, cancellationToken);
 
             return lessonsList is null ? NotFound() : Ok(lessonsList);
         }
@@ -76,21 +48,21 @@ public class LessonPlanController : ControllerBase
         }
     }
     
-    [HttpGet("{name}/{year}/{group}")]
+    [HttpGet]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(IEnumerable<LessonPlanResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<GetLessonPlanResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllLessonsForMajorYearGroup(
-        [FromRoute] LessonPlanGroupRequest lessonPlanGroupRequest,
+        [FromQuery] GetLessonPlanRequest getLessonPlanRequest,
         [FromQuery, Required] Language language,
         CancellationToken cancellationToken)
     {
         try
         {
             var lessonsList = await _lessonPlanService
-                .GetAllLessonsForMajorYearGroup(lessonPlanGroupRequest, language, cancellationToken);
+                .GetAllLessonsForMajorYearGroup(getLessonPlanRequest, language, cancellationToken);
 
             return lessonsList is null ? NotFound() : Ok(lessonsList);
         }

@@ -3,7 +3,7 @@ using Kiosk.Abstractions.Enums;
 
 namespace Kiosk.Abstractions.Models.LessonPlan;
 
-public class LessonPlanResponse
+public class GetLessonPlanResponse
 {
     public string? _id { get; set; }
     
@@ -21,7 +21,7 @@ public class LessonPlanResponse
     
     public required List<string> Teachers { get; set; }
     
-    public object? Class { get; set; }
+    public dynamic? Class { get; set; }
     
     public required string Subject { get; set; }
     

@@ -48,8 +48,8 @@ public class NewsService : INewsService
 
     public async Task<IEnumerable<NewsResponse>?> GetTranslatedListOfNews(Source? source, Language language, CancellationToken cancellationToken)
     {
-        var newsList = await _newsRepository.GetManyNews(source, cancellationToken);
+            var newsList = await _newsRepository.GetManyNews(source, cancellationToken);
 
-        return newsList?.Select(news => MapTranslatedNews(news, language));
+            return newsList?.Select(news => MapTranslatedNews(news, language));
     }
 }

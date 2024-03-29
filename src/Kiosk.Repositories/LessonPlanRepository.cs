@@ -13,9 +13,30 @@ public class LessonPlanRepository : ILessonPlanRepository
     {
         _lessons = mongoDatabase.GetCollection<LessonPlan>(_collectionName);
     }
+    
 
-
-    public async Task<IEnumerable<LessonPlan>?> GetLessons(FilterDefinition<LessonPlan> filter, CancellationToken cancellationToken)
-        => await _lessons.Find(filter)
+    public async Task<IEnumerable<LessonPlan>?> GetAllLecturesForMajorYear(GetLessonsPlanRequestLectures getLessonsPlanRequestLectures, CancellationToken cancellationToken)
+    {
+        var filter = Builders<LessonPlan>.Filter.Where(lessons =>
+            lessons.Name == getLessonsPlanRequestLectures.Name &&
+            lessons.Year == getLessonsPlanRequestLectures.Year &&
+            lessons.Pl.Type=="wykład");
+        
+        return await _lessons.Find(filter)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<LessonPlan>?> GetAllLessonsForMajorYearGroup(GetLessonPlanRequest getLessonPlanRequest, CancellationToken cancellationToken)
+    {
+        var lessonsType = new[] { "all", getLessonPlanRequest.Group, "fakultet", "seminarium" };
+        var filter = Builders<LessonPlan>.Filter.Where(lessons =>
+            lessons.Name == getLessonPlanRequest.Name &&
+            lessons.Year == getLessonPlanRequest.Year &&
+            (getLessonPlanRequest.Group == null 
+             || lessons.Groups != null 
+             && lessons.Groups.Any(group => lessonsType.Contains(group))));
+        
+        return await _lessons.Find(filter)
+            .ToListAsync(cancellationToken);
+    }
 }

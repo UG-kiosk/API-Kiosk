@@ -18,9 +18,9 @@ public class LessonPlanService : ILessonPlanService
         _mapper = mapper;
     }
     
-    private LessonPlanResponse MapTranslatedLessons(LessonPlan lessonPlan, Language language)
+    private GetLessonPlanResponse MapTranslatedLessons(LessonPlan lessonPlan, Language language)
     {
-        var mappedLessons = _mapper.Map<LessonPlanResponse>(lessonPlan);
+        var mappedLessons = _mapper.Map<GetLessonPlanResponse>(lessonPlan);
         mappedLessons.Language = language;
 
         switch (language)
@@ -39,35 +39,17 @@ public class LessonPlanService : ILessonPlanService
 
         return mappedLessons;
     }
-    
-    public async Task<IEnumerable<LessonPlanResponse>?> GetAllLessonsForMajorYear(BaseLessonPlanRequest baseLessonPlanRequest, Language language, CancellationToken cancellationToken)
+
+    public async Task<IEnumerable<GetLessonPlanResponse>?> GetAllLecturesForMajorYear(GetLessonsPlanRequestLectures getLessonsPlanRequestLectures, Language language, CancellationToken cancellationToken)
     {
-        var filter = Builders<LessonPlan>.Filter.Where(lessons => 
-                lessons.Name == baseLessonPlanRequest.Name &&
-                lessons.Year == baseLessonPlanRequest.Year);
-        var lessons = await _lessonPlanRepository.GetLessons(filter, cancellationToken);
+        var lessons = await _lessonPlanRepository.GetAllLecturesForMajorYear(getLessonsPlanRequestLectures, cancellationToken);
         return lessons?.Select(lesson => MapTranslatedLessons(lesson, language));
     }
 
-    public async Task<IEnumerable<LessonPlanResponse>?> GetAllLecturesForMajorYear(BaseLessonPlanRequest baseLessonPlanRequest, Language language, CancellationToken cancellationToken)
+    public async Task<IEnumerable<GetLessonPlanResponse>?> GetAllLessonsForMajorYearGroup(GetLessonPlanRequest getLessonPlanRequest, Language language, CancellationToken cancellationToken)
     {
-        var filter = Builders<LessonPlan>.Filter.Where(lessons =>
-                lessons.Name == baseLessonPlanRequest.Name &&
-                lessons.Year == baseLessonPlanRequest.Year &&
-                lessons.Pl.Type=="wykład");
-        var lessons = await _lessonPlanRepository.GetLessons(filter, cancellationToken);
-        return lessons?.Select(lesson => MapTranslatedLessons(lesson, language));
-    }
-
-    public async Task<IEnumerable<LessonPlanResponse>?> GetAllLessonsForMajorYearGroup(LessonPlanGroupRequest lessonPlanGroupRequest, Language language, CancellationToken cancellationToken)
-    {
-        var lessonsType = new[] { "all", lessonPlanGroupRequest.Group, "fakultet", "seminarium" };
-        var filter = Builders<LessonPlan>.Filter.Where(lessons =>
-            lessons.Name == lessonPlanGroupRequest.Name &&
-            lessons.Year == lessonPlanGroupRequest.Year &&
-            lessons.Groups != null &&
-            lessons.Groups.Any(group => lessonsType.Contains(group)));
-        var lessons = await _lessonPlanRepository.GetLessons(filter, cancellationToken);
+        
+        var lessons = await _lessonPlanRepository.GetAllLessonsForMajorYearGroup(getLessonPlanRequest, cancellationToken);
         return lessons?.Select(lesson => MapTranslatedLessons(lesson, language));
     }
 }

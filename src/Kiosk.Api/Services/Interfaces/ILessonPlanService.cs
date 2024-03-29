@@ -5,10 +5,8 @@ namespace KioskAPI.Services.Interfaces;
 
 public interface ILessonPlanService
 {
-    Task<IEnumerable<LessonPlanResponse>?> GetAllLessonsForMajorYear(BaseLessonPlanRequest baseLessonPlanRequest, Language language, CancellationToken cancellationToken);
+    Task<IEnumerable<GetLessonPlanResponse>?> GetAllLecturesForMajorYear(GetLessonsPlanRequestLectures getLessonsPlanRequestLectures, Language language, CancellationToken cancellationToken);
     
-    Task<IEnumerable<LessonPlanResponse>?> GetAllLecturesForMajorYear(BaseLessonPlanRequest baseLessonPlanRequest, Language language, CancellationToken cancellationToken);
-    
-    Task<IEnumerable<LessonPlanResponse>?> GetAllLessonsForMajorYearGroup(LessonPlanGroupRequest lessonPlanGroupRequest, Language language, CancellationToken cancellationToken);
+    Task<IEnumerable<GetLessonPlanResponse>?> GetAllLessonsForMajorYearGroup(GetLessonPlanRequest getLessonPlanRequest, Language language, CancellationToken cancellationToken);
 
 }

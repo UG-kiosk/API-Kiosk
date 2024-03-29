@@ -7,6 +7,6 @@ public class LessonPlanProfile : Profile
 {
     public LessonPlanProfile()
     {
-        CreateMap<LessonPlan, LessonPlanResponse>();
+        CreateMap<LessonPlan, GetLessonPlanResponse>();
     }
 }
