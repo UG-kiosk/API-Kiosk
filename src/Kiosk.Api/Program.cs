@@ -46,6 +46,17 @@ builder.Services
     .AddScoped<ITranslatorService, TranslatorService>();
 
 
+builder.Services.AddCors((options =>
+{
+    options.AddPolicy("corspolicy",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+}));
+
 builder.Services
     .AddMvc()
     .AddJsonOptions(opts =>
@@ -70,6 +81,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("corspolicy");
 
 app.UseAuthorization();
 
