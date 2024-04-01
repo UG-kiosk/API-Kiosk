@@ -9,4 +9,6 @@ public interface INewsRepository
     Task<News?> GetNews(string id, CancellationToken cancellationToken);
 
     Task<(IEnumerable<News>?, Pagination Pagination)> GetManyNews(Source? source, Pagination pagination, CancellationToken cancellationToken);
+    
+    Task CreateNews(IEnumerable<News> news, CancellationToken cancellationToken);
 }
