@@ -30,8 +30,9 @@ public class EctsSubjectDocument
     public required Degree Degree { get; set; }
 
     [Range(1, 6)] public required int Term { get; set; }
-
-    [Range(1, 3)] public required int Year { get; set; }
+    
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    [Range(1, 3)] public required Year Year { get; set; }
 
     public required List<int> RecruitmentYear { get; set; }
     

@@ -68,6 +68,17 @@ builder.Services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors((options =>
+{
+    options.AddPolicy("corspolicy",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+}));
+
 var app = builder.Build();
 
 
@@ -87,5 +98,9 @@ app.UseCors("corspolicy");
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("corspolicy");
+
+
 
 app.Run();
