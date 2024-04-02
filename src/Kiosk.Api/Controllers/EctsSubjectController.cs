@@ -226,8 +226,7 @@ public class EctsSubjectController : ControllerBase
     {
         try
         {
-            var result = (await _ectsSubjectRepository.GetYears(baseEctsSubjectRequest, cancellationToken))
-                .OrderDescending();
+            var result = await _ectsSubjectService.GetYears(baseEctsSubjectRequest, cancellationToken);
     
             return result is null ? NotFound() : Ok(result);
         }

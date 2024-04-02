@@ -2,7 +2,6 @@ using AutoMapper;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
 using Kiosk.Repositories.Interfaces;
-using KioskAPI.Services.Helpers;
 using KioskAPI.Services.Interfaces;
 using ILogger = Serilog.ILogger;
 
@@ -42,8 +41,7 @@ public class EctsSubjectService : IEctsSubjectService
         var result = major is null
             ? await _ectsSubjectRepository.GetMajors(degree, cancellationToken)
             : await _ectsSubjectRepository.GetSpecialities(degree, major, cancellationToken);
-            
-
+        
         return result;
     }
     
@@ -92,4 +90,6 @@ public class EctsSubjectService : IEctsSubjectService
         return ectsSubjectResponse;
     }
     
+    public async Task<IEnumerable<int>?> GetYears(BaseEctsSubjectRequest baseEctsSubjectRequest, CancellationToken cancellationToken)
+        => (await _ectsSubjectRepository.GetYears(baseEctsSubjectRequest, cancellationToken)).OrderDescending();
 }
