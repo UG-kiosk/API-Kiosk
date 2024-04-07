@@ -9,4 +9,6 @@ public interface ILessonPlanService
     
     Task<IEnumerable<GetLessonPlanResponse>?> GetAllLessonsForMajorYearGroup(GetLessonPlanRequest getLessonPlanRequest, Language language, CancellationToken cancellationToken);
 
+    Task<IEnumerable<string>?> GetMajors(CancellationToken cancellationToken);
+
 }

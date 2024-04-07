@@ -75,4 +75,29 @@ public class LessonPlanController : ControllerBase
             return Problem();
         }
     }
+    
+     
+    [HttpGet("majors")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetMajors(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _lessonPlanService.GetMajors(cancellationToken);
+
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while getting majors. {ExceptionMessage}",
+                ex.Message);
+
+            return Problem();
+        }
+    }
 }

@@ -52,4 +52,10 @@ public class LessonPlanService : ILessonPlanService
         var lessons = await _lessonPlanRepository.GetAllLessonsForMajorYearGroup(getLessonPlanRequest, cancellationToken);
         return lessons?.Select(lesson => MapTranslatedLessons(lesson, language));
     }
+
+    public Task<IEnumerable<string>?> GetMajors(CancellationToken cancellationToken)
+    {
+        var result = _lessonPlanRepository.GetMajors(cancellationToken);
+        return result;
+    }
 }

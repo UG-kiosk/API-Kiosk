@@ -7,5 +7,6 @@ public interface ILessonPlanRepository
 {
     Task<IEnumerable<LessonPlan>?> GetAllLecturesForMajorYear(GetLessonsPlanRequestLectures getLessonsPlanRequestLectures, CancellationToken cancellationToken);
     Task<IEnumerable<LessonPlan>?> GetAllLessonsForMajorYearGroup(GetLessonPlanRequest getLessonPlanRequest, CancellationToken cancellationToken);
+    Task<IEnumerable<string>?> GetMajors(CancellationToken cancellationToken);
 
 }

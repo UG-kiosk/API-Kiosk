@@ -39,4 +39,8 @@ public class LessonPlanRepository : ILessonPlanRepository
         return await _lessons.Find(filter)
             .ToListAsync(cancellationToken);
     }
+    
+    public async Task<IEnumerable<string>?> GetMajors(CancellationToken cancellationToken)
+        => (await _lessons.DistinctAsync(lessons => lessons.Name, _ => true, cancellationToken: cancellationToken)).ToEnumerable();
+
 }
