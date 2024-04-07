@@ -61,4 +61,9 @@ public class StaffRepository : IStaffRepository
                 .Project<Academic>(projection)
                 .FirstOrDefaultAsync(cancellationToken);
     }
+    
+    public async Task CreateStaff(IEnumerable<Academic> staff, CancellationToken cancellationToken)
+    {
+        await _staff.InsertManyAsync(staff, cancellationToken: cancellationToken);
+    }
 }

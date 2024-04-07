@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
-
+using Kiosk.Abstractions.Models.Staff;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -57,6 +57,24 @@ public class StaffController : ControllerBase
         {
             _logger.Error(exception,
                 "Something went wrong while getting staff member. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> CreateStaff([FromBody] IEnumerable<AcademicRequest> staff, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _staffService.CreateStaff(staff, cancellationToken);
+            return Ok();
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while creating staff. {ExceptionMessage}",
                 exception.Message);
 
             return Problem();
