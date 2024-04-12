@@ -58,4 +58,30 @@ public class LessonPlanService : ILessonPlanService
         var result = _lessonPlanRepository.GetMajors(cancellationToken);
         return result;
     }
+
+    public async Task<GetMajorGroupsResponse> GetMajorGroups(string major, int year, CancellationToken cancellationToken)
+    {
+        var practicalClassesGroups = _lessonPlanRepository.GetMajorItems(major, year, "ćwiczenia", null, cancellationToken);
+        var labGroups = _lessonPlanRepository.GetMajorItems(major, year, "laboratorium", null, cancellationToken);
+        var seminarGroups = _lessonPlanRepository.GetMajorItems(major, year, "seminarium", new List<string> { "seminarium" }, cancellationToken);
+        var facultyGroups = _lessonPlanRepository.GetMajorItems(major, year, "fakultet", new List<string> { "fakultet" }, cancellationToken);
+        var foreignLanguage =  _lessonPlanRepository.GetMajorItems(major, year, "lektorat", null, cancellationToken);
+        
+        await Task.WhenAll(practicalClassesGroups, labGroups, seminarGroups, facultyGroups, foreignLanguage);
+
+        return new GetMajorGroupsResponse
+        {
+            PracticalClasses = (await practicalClassesGroups)?.ToList(),
+            Labs = (await labGroups)?.ToList(),
+            Seminars = (await seminarGroups)?.ToList(),
+            Faculties = (await facultyGroups)?.ToList(),
+            ForeignLanguage = (await foreignLanguage)?.ToList()
+        };
+    }
+    
+    public Task<IEnumerable<int>?> GetMajorYears(string major, CancellationToken cancellationToken)
+    {
+        var result = _lessonPlanRepository.GetMajorYears(major, cancellationToken);
+        return result;
+    }
 }

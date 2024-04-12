@@ -100,4 +100,52 @@ public class LessonPlanController : ControllerBase
             return Problem();
         }
     }
+    
+    [HttpGet("{major}/years")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetMajorYears([FromRoute, Required] string major, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _lessonPlanService.GetMajorYears(major, cancellationToken);
+
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while getting majors. {ExceptionMessage}",
+                ex.Message);
+
+            return Problem();
+        }
+    }
+    
+    [HttpGet("{major}/{year}/groups")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetMajorGroups([FromRoute, Required] string major, [FromRoute, Required] int year, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _lessonPlanService.GetMajorGroups(major, year, cancellationToken);
+
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while getting majors. {ExceptionMessage}",
+                ex.Message);
+
+            return Problem();
+        }
+    }
 }
