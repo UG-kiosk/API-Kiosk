@@ -1,8 +1,9 @@
 using Kiosk.Abstractions.Enums;
+using System.Text.Json.Serialization;
 
 namespace Kiosk.Abstractions.Models.Events;
 
-public class EventResponse
+public class GetEventResponse
 {
     public string? _id { get; set; }
     
@@ -10,7 +11,8 @@ public class EventResponse
     
     public required string Name { get; set; }
     
-    public required string Content { get; set; }
+    public required Object Content { get; set; }
     
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public required Language Language { get; set; }
 }

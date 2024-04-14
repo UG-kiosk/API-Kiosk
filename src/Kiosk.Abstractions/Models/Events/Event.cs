@@ -7,19 +7,17 @@ namespace Kiosk.Abstractions.Models.Events;
 
 public class EventDetails
 {
-    public required string name { get; set; }
-    public required string content { get; set; }
+    public required string Name { get; set; }
+    public required string Content { get; set; }
 }
 
 public class Event
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    
     public string? _id { get; set; }
-    
-    public required string url { get; set; }
-    
     public required EventDetails Pl { get; set; }
+    public required EventDetails En { get; set; }
     
+    public required string? Url { get; set; }
 }

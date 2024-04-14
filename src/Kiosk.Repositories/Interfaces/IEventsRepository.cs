@@ -7,5 +7,5 @@ public interface IEventsRepository
 {
     Task<Event?> GetEvent(string id, CancellationToken cancellationToken);
     
-    Task<IEnumerable<Event>?> GetManyEvents(Source? source, CancellationToken cancellationToken);
+    Task<IEnumerable<Event>?> GetManyEvents(CancellationToken cancellationToken);
 }

@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
-using Kiosk.Abstractions.Enums.News;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -8,6 +6,8 @@ using ILogger = Serilog.ILogger;
 
 namespace KioskAPI.Controllers;
 
+[ApiController]
+[Route("events")]
 public class EventsController : ControllerBase
 {
     private readonly ILogger _logger;
@@ -20,15 +20,17 @@ public class EventsController : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
     public async Task<IActionResult> GetEvent(
         string id,
-        CancellationToken cancellationToken,
-        [FromQuery(Name = "language"), Required] Language language)
+        Language language,
+        CancellationToken cancellationToken
+        )
     {
         try
         {
             var events = await _eventsService.GetTranslatedEvent(id, language, cancellationToken);
-            
             return Ok(events);
         }
         catch (Exception exception)
@@ -42,18 +44,19 @@ public class EventsController : ControllerBase
     }
     
     [HttpGet]
+    [Consumes("application/json")]
+    [Produces("application/json")]
     public async Task<IActionResult> GetEvents(
         CancellationToken cancellationToken,
-        [FromQuery(Name = "language"), Required] Language language,
-        [FromQuery] Source? source=null)
+        Language language)
     
     {
         try
         {
             var eventsList = await _eventsService
-                .GetTranslatedEvents(source, language, cancellationToken);
+                .GetTranslatedEvents(language, cancellationToken);
 
-            return eventsList is null ? NoContent() : Ok(eventsList);
+            return Ok(eventsList);
         }
         catch (Exception exception)
         {
