@@ -8,7 +8,7 @@ namespace Kiosk.Abstractions.Models.Events;
 public class EventDetails
 {
     public required string Name { get; set; }
-    public required string Content { get; set; }
+    public required Object Content { get; set; }
 }
 
 public class Event
