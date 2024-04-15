@@ -28,13 +28,16 @@ public class LessonPlanRepository : ILessonPlanRepository
 
     public async Task<IEnumerable<LessonPlan>?> GetAllLessonsForMajorYearGroup(GetLessonPlanRequest getLessonPlanRequest, CancellationToken cancellationToken)
     {
-        var lessonsType = new[] { "all", getLessonPlanRequest.Group, "fakultet", "seminarium" };
+        var groups = new[] { "all", getLessonPlanRequest.PracticalClasses, getLessonPlanRequest.Labs,  getLessonPlanRequest.ForeignLanguage };
         var filter = Builders<LessonPlan>.Filter.Where(lessons =>
             lessons.Name == getLessonPlanRequest.Name &&
             lessons.Year == getLessonPlanRequest.Year &&
-            (getLessonPlanRequest.Group == null 
-             || lessons.Groups != null 
-             && lessons.Groups.Any(group => lessonsType.Contains(group))));
+            (lessons.Groups != null 
+             && (lessons.Groups.Any(group => groups.Contains(group)) 
+             || getLessonPlanRequest.Seminars!=null && lessons.Groups.Contains("seminarium") && lessons.Teachers.Contains(getLessonPlanRequest.Seminars)
+             || getLessonPlanRequest.Faculties != null && getLessonPlanRequest.Faculties!.Count > 0 && getLessonPlanRequest.Faculties.Contains(lessons.Pl.Subject)
+             )
+             ));
         
         return await _lessons.Find(filter)
             .ToListAsync(cancellationToken);
