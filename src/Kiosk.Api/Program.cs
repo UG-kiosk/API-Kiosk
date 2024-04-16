@@ -37,6 +37,8 @@ builder.Services
     .AddScoped<IStaffService, StaffService>()
     .AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
     .AddScoped<IEctsSubjectService, EctsSubjectService>()
+    .AddScoped<IEventsRepository, EventsRepository>()
+    .AddScoped<IEventsService, EventsService>()
     .AddScoped<IMajorsRepository, MajorsRepository>()
     .AddScoped<IMajorsService, MajorsService>()
     .AddScoped<INewsRepository, NewsRepository>()
