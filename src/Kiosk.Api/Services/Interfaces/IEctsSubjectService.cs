@@ -9,7 +9,7 @@ public interface IEctsSubjectService
     
     Task<EctsSubjectResponse> GetSubjectsByMajor(EctsSubjectRequest ectsSubjectRequest, CancellationToken cancellationToken);
 
-    Task<IEnumerable<string>?> GetMajorsOrSpecialities(Degree degree, string? major, CancellationToken cancellationToken);
+    Task<IEnumerable<string>?> GetMajorsOrSpecialities(Degree degree, Language language, string? major, CancellationToken cancellationToken);
 
     Task<IEnumerable<int>?> GetYears(BaseEctsSubjectRequest baseEctsSubjectRequest,
         CancellationToken cancellationToken);

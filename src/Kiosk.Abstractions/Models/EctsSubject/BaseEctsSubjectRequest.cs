@@ -9,4 +9,6 @@ public class BaseEctsSubjectRequest
     public required Degree Degree { get; set; }
 
     public required string? Major { get; set; }
+    
+    public required Language Language { get; set; }
 }

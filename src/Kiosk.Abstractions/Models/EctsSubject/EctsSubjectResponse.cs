@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
+using Kiosk.Abstractions.Models.Major;
 
 namespace Kiosk.Abstractions.Models;
 
@@ -26,7 +27,7 @@ public class SubjectsByYearAndTerm
 
 public class SubjectResponse
 {
-    public required string Subject { get; set; }
+    public required EctsSubjectDetails Pl { get; set; }
 
     public required int LectureHours { get; set; }
 

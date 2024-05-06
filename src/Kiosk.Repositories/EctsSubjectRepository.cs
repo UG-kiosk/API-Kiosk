@@ -1,7 +1,10 @@
 using System.Collections;
+using System.Text.RegularExpressions;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Major;
 using Kiosk.Repositories.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Kiosk.Repositories;
@@ -19,8 +22,8 @@ public class EctsSubjectRepository : IEctsSubjectRepository
     public async Task<IEnumerable<EctsSubjectDocument>> GetEctsSubjects(CancellationToken cancellationToken)
        => (await _ectsSubjects.FindAsync(_ => true, cancellationToken: cancellationToken)).ToEnumerable();
 
-    public async Task<IEnumerable<EctsSubjectDocument>?> GetEctsSubjectsByName(string subject, CancellationToken cancellationToken)
-        => (await _ectsSubjects.FindAsync(r => r.Subject == subject, cancellationToken: cancellationToken))
+    public async Task<IEnumerable<EctsSubjectDocument>?> GetEctsSubjectsByName(string subject,Language language, CancellationToken cancellationToken)
+        => (await _ectsSubjects.FindAsync(r => r[language].Subject == subject, cancellationToken: cancellationToken))
             .ToEnumerable();
 
     public async Task CreateEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
@@ -39,33 +42,45 @@ public class EctsSubjectRepository : IEctsSubjectRepository
         return updatedDocument;
     }
 
-    public async Task<IEnumerable<string>?> GetMajors(Degree degree, CancellationToken cancellationToken)
-    => (await _ectsSubjects.DistinctAsync(subject => subject.Major, DegreeFilter(degree), cancellationToken: cancellationToken)).ToEnumerable();
+    public async Task<IEnumerable<string>?> GetMajors(Degree degree, Language language, CancellationToken cancellationToken)=>
+        (await _ectsSubjects.DistinctAsync<string>( $"{language}.major", DegreeFilter(degree),cancellationToken: cancellationToken)).ToEnumerable();
     
-    public async Task<IEnumerable<string?>?> GetSpecialities(Degree degree, string major, CancellationToken cancellationToken)
-        => (await _ectsSubjects.DistinctAsync(subject => subject.Speciality, DegreeFilter(degree) & MajorOrSpecialityFilter(major, null), cancellationToken: cancellationToken)).ToEnumerable();
+    public async Task<IEnumerable<string?>?> GetSpecialities(Degree degree, string major, Language language, CancellationToken cancellationToken)
+        => (await _ectsSubjects.DistinctAsync<string>($"{language}.subject", DegreeFilter(degree) & MajorOrSpecialityFilter(major, null, language), cancellationToken: cancellationToken)).ToEnumerable();
     
     public async Task<IEnumerable<EctsSubjectDocument>?> GetSubjectsByMajor(EctsSubjectRequest ectsSubject, CancellationToken cancellationToken)
     {
         var yearFilter = Builders<EctsSubjectDocument>.Filter.Where(x => x.RecruitmentYear.Contains(ectsSubject.Year));
         
         var updatedDocument = (await _ectsSubjects
-            .FindAsync(MajorOrSpecialityFilter(ectsSubject.Major, ectsSubject.Speciality) & DegreeFilter(ectsSubject.Degree) & yearFilter, cancellationToken: cancellationToken))
+            .FindAsync(MajorOrSpecialityFilter(ectsSubject.Major, ectsSubject.Speciality, ectsSubject.Language) & DegreeFilter(ectsSubject.Degree) & yearFilter, cancellationToken: cancellationToken))
             .ToEnumerable();
     
         return updatedDocument;
     }
+    
+    
 
     public async Task<IEnumerable<int>?> GetYears(BaseEctsSubjectRequest baseEctsSubjectRequest, CancellationToken cancellationToken) => 
-        (await _ectsSubjects.DistinctAsync(e => e.RecruitmentYear.First(), MajorOrSpecialityFilter(baseEctsSubjectRequest.Major, baseEctsSubjectRequest.Speciality) & DegreeFilter(baseEctsSubjectRequest.Degree)))
+        (await _ectsSubjects.DistinctAsync(e => e.RecruitmentYear.First(), MajorOrSpecialityFilter(baseEctsSubjectRequest.Major, baseEctsSubjectRequest.Speciality, baseEctsSubjectRequest.Language) & DegreeFilter(baseEctsSubjectRequest.Degree)))
         .ToList();
 
-    
-    private FilterDefinition<EctsSubjectDocument> MajorOrSpecialityFilter(string? major, string? speciality) =>
-        Builders<EctsSubjectDocument>.Filter.Where(subject => speciality == null ? subject.Major == major : subject.Speciality == speciality);
+
+    private FilterDefinition<EctsSubjectDocument> MajorOrSpecialityFilter(string? major, string? speciality, Language language)
+    {
+        if (speciality == null)
+        {
+            return Builders<EctsSubjectDocument>.Filter.Eq($"{language}.major", major);
+        }
+        else
+        {
+            return Builders<EctsSubjectDocument>.Filter.Eq($"{language}.speciality", speciality);
+        }
+    }
     
     private FilterDefinition<EctsSubjectDocument> DegreeFilter(Degree degree) =>
         Builders<EctsSubjectDocument>.Filter.Eq(r => r.Degree, degree);
     
+
     
 }

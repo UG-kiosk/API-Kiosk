@@ -1,6 +1,7 @@
 using AutoMapper;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Major;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
 using ILogger = Serilog.ILogger;
@@ -24,10 +25,10 @@ public class EctsSubjectService : IEctsSubjectService
 
     public async Task<bool> AddEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
     {
-        var existingDocument = await _ectsSubjectRepository.GetEctsSubjectsByName(ectsSubjectDocument.Subject, cancellationToken);
+        var existingDocument = await _ectsSubjectRepository.GetEctsSubjectsByName(ectsSubjectDocument.Pl.Subject, Language.Pl, cancellationToken);
 
         bool isTheSameEctsSubject(EctsSubjectDocument document) =>
-            document.Subject == ectsSubjectDocument.Subject && document.Major == ectsSubjectDocument.Major && document.Degree == ectsSubjectDocument.Degree;
+            document.Pl.Subject == ectsSubjectDocument.Pl.Subject && document.Pl.Major == ectsSubjectDocument.Pl.Major && document.Degree == ectsSubjectDocument.Degree;
 
         if (existingDocument.Any(x => isTheSameEctsSubject(x))) return false;
 
@@ -36,11 +37,11 @@ public class EctsSubjectService : IEctsSubjectService
         return true;
     }
     
-    public async Task<IEnumerable<string>?> GetMajorsOrSpecialities(Degree degree, string? major, CancellationToken cancellationToken)
+    public async Task<IEnumerable<string>?> GetMajorsOrSpecialities(Degree degree, Language language, string? major, CancellationToken cancellationToken)
     {
         var result = major is null
-            ? await _ectsSubjectRepository.GetMajors(degree, cancellationToken)
-            : await _ectsSubjectRepository.GetSpecialities(degree, major, cancellationToken);
+            ? await _ectsSubjectRepository.GetMajors(degree,language, cancellationToken)
+            : await _ectsSubjectRepository.GetSpecialities(degree, major,language, cancellationToken);
         
         return result;
     }
@@ -54,7 +55,7 @@ public class EctsSubjectService : IEctsSubjectService
         EctsSubjectResponse ectsSubjectResponse = new EctsSubjectResponse()
         {
             Degree = ectsSubjectRequest.Degree,
-            Major = ectsSubjectRequest.Major ?? ectsSubjectDocuments.First().Speciality,
+            Major = ectsSubjectRequest.Major ?? ectsSubjectDocuments.First()[ectsSubjectRequest.Language].Speciality,
             RecruitmentYear = ectsSubjectRequest.Year,
             SubjectsByYearAndTerm = new List<SubjectsByYearAndTerm>()
         };
@@ -67,12 +68,16 @@ public class EctsSubjectService : IEctsSubjectService
             {
                 Year = x.Key.Year,
                 Term = x.Key.Term,
-                Subjects = x.Select(subject => _mapper.Map<SubjectResponse>(subject)).OrderBy(x=>x.Subject)
+                Subjects = x.Select(subject => _mapper.Map<SubjectResponse>(subject)).OrderBy(x=>x.Pl.Subject)
             };
 
             var sum = new SubjectResponse()
             {
-                Subject = "Razem",
+                Pl = new EctsSubjectDetails()
+                {
+                    Major = "razem",
+                    Subject = "razem"
+                },
                 Ects = x.Sum(x => x.Ects),
                 LabsHours = x.Sum(x => x.LabsHours),
                 LectureHours = x.Sum(x => x.LectureHours),
