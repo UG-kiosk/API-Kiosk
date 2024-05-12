@@ -35,4 +35,9 @@ public class NewsRepository : INewsRepository
         pagination.HasNextPage = Pagination.CalculateHasNextPage(pagination.Page, pagination.TotalPages);
         return (news, pagination);
     }
+
+    public async Task CreateNews(IEnumerable<News> news, CancellationToken cancellationToken)
+    {
+        await _news.InsertManyAsync(news, cancellationToken: cancellationToken);
+    }
 }

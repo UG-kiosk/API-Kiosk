@@ -76,4 +76,25 @@ public class NewsController : ControllerBase
             return Problem();
         }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateNews(
+        [FromBody] List<CreateNewsRequest> createNewsRequests,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _newsService.CreateNews(createNewsRequests, cancellationToken);
+
+            return Ok();
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while creating news. {ExceptionMessage}",
+                exception.Message);
+            
+            return Problem();
+        }
+    }
 }
