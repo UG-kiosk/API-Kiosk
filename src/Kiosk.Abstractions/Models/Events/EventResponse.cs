@@ -9,6 +9,8 @@ public class GetEventResponse
     
     public required string Url { get; set; }
     
+    public required DateTime Date { get; set; }
+    
     public required string Name { get; set; }
     
     public required Object Content { get; set; }
