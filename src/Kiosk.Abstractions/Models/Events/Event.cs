@@ -20,4 +20,6 @@ public class Event
     public required EventDetails En { get; set; }
     
     public required string? Url { get; set; }
+    
+    public required DateTime Date { get; set; }
 }

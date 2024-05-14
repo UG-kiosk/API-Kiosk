@@ -22,6 +22,7 @@ public class EventsRepository : IEventsRepository
     
     public async Task<Event?> GetEvent(string id, CancellationToken cancellationToken)
         => await _eventsCollection.Find(events => events._id == id)
+            .SortByDescending(events => events.Date)
             .FirstOrDefaultAsync(cancellationToken);
 
     public async Task<IEnumerable<Event>?> GetManyEvents(CancellationToken cancellationToken)
