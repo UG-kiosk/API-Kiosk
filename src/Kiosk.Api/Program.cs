@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Kiosk.Repositories;
 using Kiosk.Repositories.Interfaces;
+using KioskAPI.Filters;
 using KioskAPI.Services;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Rewrite;
@@ -33,6 +34,8 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 builder.Services
+    .AddScoped<IAuthService, AuthService>()
+    .AddScoped<ValidateTokenFilter>()
     .AddScoped<IStaffRepository, StaffRepository>()
     .AddScoped<IStaffService, StaffService>()
     .AddScoped<IEctsSubjectRepository, EctsSubjectRepository>()
