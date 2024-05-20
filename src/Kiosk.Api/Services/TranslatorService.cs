@@ -23,7 +23,7 @@ public class TranslatorService : ITranslatorService
     private string BuildRequestUrl()
     {
         string apiUrl = Environment.GetEnvironmentVariable("SPRING_API_URL");
-        string endpoint = "/api/translations";
+        string endpoint = "/translations-kiosk-api/api/translations";
         return apiUrl.TrimEnd('/') + endpoint;
     }
 

@@ -23,8 +23,9 @@ public class NewsRepository : INewsRepository
 
     public async Task<(IEnumerable<News>?, Pagination Pagination)> GetManyNews(Source? source, Pagination pagination, CancellationToken cancellationToken)
     {
-        Expression<Func<News, bool>> filter = news => source == null || news.Source.ToString() == source.ToString();
-
+        Source sourceType;
+        Enum.TryParse(source.ToString(), out sourceType);
+        Expression<Func<News, bool>> filter = news => source == null || news.Source == sourceType || news.Source.ToString() == source.ToString();
         var news = await _news.Find(filter).Skip((pagination.Page - 1) * pagination.ItemsPerPage)
             .SortByDescending(news => news.Datetime)
             .Limit(pagination.ItemsPerPage)
