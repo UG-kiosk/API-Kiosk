@@ -53,6 +53,14 @@ public class StaffService : IStaffService
         await _staffRepository.CreateStaff(mappedStaff, cancellationToken);
     }
     
+    public async Task<AcademicResponse?> UpdateStaffMember(string academicId, AcademicRequest academic, CancellationToken cancellationToken)
+    {
+        var translatedStaff = await TranslateStaff(new List<AcademicRequest> { academic }, cancellationToken);
+        var updatedStaffMember = await _staffRepository.UpdateStaffMember(academicId, translatedStaff.First(), cancellationToken);
+
+        return _mapper.Map<AcademicResponse>(updatedStaffMember, opt => opt.Items["language"] = Language.Pl);
+    }
+    
     private async Task<IEnumerable<Academic>> TranslateStaff(IEnumerable<AcademicRequest> staff, CancellationToken cancellationToken)
     {
         ImmutableList<Language> supportedLanguages = new List<Language> { Language.En, Language.Pl }.ToImmutableList();
