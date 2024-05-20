@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.Staff;
+using KioskAPI.Filters;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -64,6 +65,7 @@ public class StaffController : ControllerBase
     }
     
     [HttpPost]
+    [ServiceFilter(typeof(ValidateTokenFilter))]
     public async Task<IActionResult> CreateStaff([FromBody] IEnumerable<AcademicRequest> staff, CancellationToken cancellationToken)
     {
         try
