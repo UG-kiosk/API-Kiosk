@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
 using Kiosk.Abstractions.Models.Major;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Repositories.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -65,6 +66,38 @@ public class EctsSubjectRepository : IEctsSubjectRepository
         (await _ectsSubjects.DistinctAsync(e => e.RecruitmentYear.First(), MajorOrSpecialityFilter(baseEctsSubjectRequest.Major, baseEctsSubjectRequest.Speciality, baseEctsSubjectRequest.Language) & DegreeFilter(baseEctsSubjectRequest.Degree)))
         .ToList();
 
+    public async Task<(IEnumerable<EctsSubjectDocument>?, Pagination pagination)> GetEctsByPagination(PaginationRequest paginationRequest, CancellationToken cancellationToken)
+    {
+        var filterBuilder = Builders<EctsSubjectDocument>.Filter;
+        var filterValue = paginationRequest.filterValue;
+        if (string.IsNullOrEmpty(filterValue)) filterValue = "";
+        
+        var subjectFilter = !string.IsNullOrEmpty(filterValue) 
+            ? filterBuilder.Regex("Pl.subject", new BsonRegularExpression(filterValue, "im")) 
+            : filterBuilder.Empty;
+
+        var degreeFilter = DegreeFilter(paginationRequest.Degree ?? Degree.Bachelor);
+
+        var sort = SortByValue(paginationRequest.sortDirection ?? Sorting.Asc, paginationRequest.sortBy ?? "subject");
+
+        var staff = await _ectsSubjects.Find(subjectFilter & degreeFilter).Sort(sort)
+            .Skip((paginationRequest.Page - 1) * paginationRequest.ItemsPerPage)
+            .Limit(paginationRequest.ItemsPerPage)
+            .ToListAsync(cancellationToken);
+        
+        var pagination = new Pagination()
+        {
+            Page = paginationRequest.Page,
+            ItemsPerPage = paginationRequest.ItemsPerPage
+        };
+        
+        var totalStaffRecords = await _ectsSubjects.CountDocumentsAsync(subjectFilter & degreeFilter, cancellationToken: cancellationToken);
+        pagination.TotalPages = Pagination.CalculateTotalPages((int)totalStaffRecords, pagination.ItemsPerPage);
+        pagination.HasNextPage = Pagination.CalculateHasNextPage(pagination.Page, pagination.TotalPages);
+        return (staff, pagination);
+        
+    }
+
 
     private FilterDefinition<EctsSubjectDocument> MajorOrSpecialityFilter(string? major, string? speciality, Language language)
     {
@@ -77,10 +110,22 @@ public class EctsSubjectRepository : IEctsSubjectRepository
             return Builders<EctsSubjectDocument>.Filter.Eq($"{language}.speciality", speciality);
         }
     }
+
+    private SortDefinition<EctsSubjectDocument> SortByValue(Sorting sortDirection, string sortingValue)
+    {
+        if (sortDirection == Sorting.Asc)
+        {
+            return Builders<EctsSubjectDocument>.Sort.Ascending($"Pl.{sortingValue}");
+        }
+        else
+        {
+            return Builders<EctsSubjectDocument>.Sort.Descending($"Pl.{sortingValue}");
+        }
+
+    }
+    
+    
     
     private FilterDefinition<EctsSubjectDocument> DegreeFilter(Degree degree) =>
         Builders<EctsSubjectDocument>.Filter.Eq(r => r.Degree, degree);
-    
-
-    
 }

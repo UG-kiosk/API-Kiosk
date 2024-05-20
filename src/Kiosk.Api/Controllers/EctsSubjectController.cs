@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
 using Kiosk.Abstractions.Models.Major;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Abstractions.Models.Translation;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
@@ -31,6 +32,7 @@ public class EctsSubjectController : ControllerBase
     }
 
     /// <summary>Getting all ects subjects</summary>
+    /// <param name="paginationRequest">All pagination info</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <response code="200">All Ects subjects successfully retrieved</response>
     /// <response code="500">Internal Server Error</response>
@@ -41,13 +43,13 @@ public class EctsSubjectController : ControllerBase
     [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetEctsSubjects(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetEctsSubjects([FromQuery] PaginationRequest paginationRequest,CancellationToken cancellationToken)
     {
         try
         {
-            var ectsSubjects = await _ectsSubjectRepository.GetEctsSubjects(cancellationToken);
+            var (ectsSubjects, pagination) = await _ectsSubjectService.GetEcts(paginationRequest, cancellationToken);
 
-            return Ok(ectsSubjects);
+            return Ok(new { ectsSubjects, pagination });
         }
         catch (Exception ex)
         {
@@ -72,7 +74,7 @@ public class EctsSubjectController : ControllerBase
     [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> AddEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddEctsSubject(EctsSubjectCreateRequest ectsSubjectDocument, CancellationToken cancellationToken)
     {
         try
         {

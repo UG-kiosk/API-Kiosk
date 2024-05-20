@@ -25,10 +25,8 @@ public class SubjectsByYearAndTerm
     public required IEnumerable<SubjectResponse> Subjects { get; set; }
 }
 
-public class SubjectResponse
+public class SubjectResponse : EctsSubjectDetails
 {
-    public required EctsSubjectDetails Pl { get; set; }
-
     public required int LectureHours { get; set; }
 
     public required int RecitationHours { get; set; }
