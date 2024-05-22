@@ -1,4 +1,6 @@
 using Kiosk.Abstractions.Enums;
+using Kiosk.Abstractions.Models.Events;
+using Kiosk.Abstractions.Models.Pagination;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -47,16 +49,18 @@ public class EventsController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
     public async Task<IActionResult> GetEvents(
-        CancellationToken cancellationToken,
-        Language language)
+        [FromQuery] int? page,
+        [FromQuery] int? itemsPerPage,
+        Language language,
+        CancellationToken cancellationToken)
     
     {
         try
         {
-            var eventsList = await _eventsService
-                .GetTranslatedEvents(language, cancellationToken);
+            var (content, pagination) = await _eventsService
+                .GetTranslatedEvents(language, page, itemsPerPage, cancellationToken);
 
-            return Ok(eventsList);
+            return content is null ? NoContent() : Ok(new {content, pagination});
         }
         catch (Exception exception)
         {
@@ -67,4 +71,27 @@ public class EventsController : ControllerBase
             return Problem();
         }
     }
+    
+    [HttpPost]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    public async Task<IActionResult> CreateEvent(
+        [FromBody]List<CreateEventRequest> createEventRequest,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _eventsService.CreateEvent(createEventRequest, cancellationToken);
+            return Ok();
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while creating event. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
+
 }

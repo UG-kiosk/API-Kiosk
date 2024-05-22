@@ -4,6 +4,7 @@ using Kiosk.Abstractions.Models.Events;
 using MongoDB.Driver;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Repositories.Interfaces;
 using MongoDB.Driver;
 
@@ -25,6 +26,21 @@ public class EventsRepository : IEventsRepository
             .SortByDescending(events => events.Date)
             .FirstOrDefaultAsync(cancellationToken);
 
-    public async Task<IEnumerable<Event>?> GetManyEvents(CancellationToken cancellationToken)
-    => await _eventsCollection.Find(Builders<Event>.Filter.Empty).ToListAsync(cancellationToken);
+    
+    
+    public async Task<(IEnumerable<Event>?, Pagination Pagination)> GetManyEvents(Pagination pagination, CancellationToken cancellationToken)
+    // => await _eventsCollection.Find(Builders<Event>.Filter.Empty).ToListAsync(cancellationToken);
+    {
+        var filter = Builders<Event>.Filter.Empty;
+        var events = await _eventsCollection.Find(filter)
+            .SortByDescending(events => events.Date)
+            .Skip((pagination.Page - 1) * pagination.ItemsPerPage)
+            .Limit(pagination.ItemsPerPage)
+            .ToListAsync(cancellationToken);
+        return (events, pagination);
+    }
+    public async Task CreateEvent(IEnumerable<Event> events, CancellationToken cancellationToken)
+    {
+        await _eventsCollection.InsertManyAsync(events, cancellationToken: cancellationToken);
+    }
 }

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Kiosk.Abstractions.Models.Events;
 
-public class GetEventResponse
+public class EventResponse
 {
     public string? _id { get; set; }
     
@@ -13,7 +13,7 @@ public class GetEventResponse
     
     public required string Name { get; set; }
     
-    public required Object Content { get; set; }
+    public required string Content { get; set; }
     
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public required Language Language { get; set; }

@@ -7,6 +7,6 @@ public class EventsProfile : Profile
 {
     public EventsProfile()
     {
-        CreateMap<Event, GetEventResponse>();
+        CreateMap<Event, EventResponse>();
     }
 }
