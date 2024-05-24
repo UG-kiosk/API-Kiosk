@@ -148,4 +148,25 @@ public class LessonPlanController : ControllerBase
             return Problem();
         }
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> CreateLessons(
+        [FromBody] List<CreateLessonPlanRequest> createLessonPlanRequests,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _lessonPlanService.CreateLessons(createLessonPlanRequests, cancellationToken);
+
+            return Ok();
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while creating lessons. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
 }

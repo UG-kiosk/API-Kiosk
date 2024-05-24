@@ -13,4 +13,5 @@ public interface ILessonPlanRepository
 
     Task<IEnumerable<int>?> GetMajorYears(string major, CancellationToken cancellationToken);
 
+    Task CreateLessons(IEnumerable<LessonPlan> mappedLessons, CancellationToken cancellationToken);
 }

@@ -1,12 +1,9 @@
-using System.Text.Json.Serialization;
 using Kiosk.Abstractions.Enums;
 
 namespace Kiosk.Abstractions.Models.LessonPlan;
 
-public class GetLessonPlanResponse
+public class CreateLessonPlanSimplified
 {
-    public string? _id { get; set; }
-    
     public required string Name { get; set; }
     
     public required int Year { get; set; }
@@ -23,13 +20,7 @@ public class GetLessonPlanResponse
     
     public string? Class { get; set; }
     
-    public required string Subject { get; set; }
+    public required LessonPlanContentSimplified Details { get; set; }
     
-    public string? Type { get; set; }
-    
-    public List<string>? Info { get; set; }
-    
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public required Language Language { get; set; }
-
+    public required Language SourceLanguage { get; set; }
 }

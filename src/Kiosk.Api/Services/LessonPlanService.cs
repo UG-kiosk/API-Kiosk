@@ -1,9 +1,10 @@
+using System.Collections.Immutable;
 using AutoMapper;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.LessonPlan;
+using Kiosk.Abstractions.Models.Translation;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
-using MongoDB.Driver;
 
 namespace KioskAPI.Services;
 
@@ -11,11 +12,13 @@ public class LessonPlanService : ILessonPlanService
 {
     private readonly ILessonPlanRepository _lessonPlanRepository;
     private readonly IMapper _mapper;
+    private readonly ITranslatorService _translatorService;
 
-    public LessonPlanService(ILessonPlanRepository lessonPlanRepository, IMapper mapper)
+    public LessonPlanService(ILessonPlanRepository lessonPlanRepository, IMapper mapper, ITranslatorService translatorService)
     {
         _lessonPlanRepository = lessonPlanRepository;
         _mapper = mapper;
+        _translatorService = translatorService;
     }
     
     private GetLessonPlanResponse MapTranslatedLessons(LessonPlan lessonPlan, Language language)
@@ -83,5 +86,52 @@ public class LessonPlanService : ILessonPlanService
     {
         var result = _lessonPlanRepository.GetMajorYears(major, cancellationToken);
         return result;
+    }
+
+    public async Task CreateLessons(IEnumerable<CreateLessonPlanRequest> createLessonPlanRequests, CancellationToken cancellationToken)
+    {
+        var mappedLessons = await TranslateLessons(createLessonPlanRequests, cancellationToken);
+        await _lessonPlanRepository.CreateLessons(mappedLessons, cancellationToken);
+    }
+
+    private async Task<IEnumerable<LessonPlan>> TranslateLessons(IEnumerable<CreateLessonPlanRequest> createLessonPlanRequests, CancellationToken cancellationToken)
+    {
+        ImmutableList<Language> supportedLanguages = new List<Language> { Language.En, Language.Pl }.ToImmutableList();
+
+        var simplifiedLessons = createLessonPlanRequests
+            .Select(lessonGroup => _mapper.Map<CreateLessonPlanSimplified>(lessonGroup)).ToList();
+        
+        var translationContent = simplifiedLessons.Select(lessonsGroup => new TranslationRequest<LessonPlanContentSimplified>
+        {
+            UniqueKey = Guid.NewGuid().ToString(),
+            TranslationPayload = lessonsGroup.Details
+        }).ToList();
+        
+        var translationTask = await _translatorService.Translate(
+            translationContent,
+            Language.Pl,
+            supportedLanguages.Where(language => language != Language.Pl),
+            cancellationToken);
+        
+        var translatedLessons = translationTask.Select(translatedContent =>
+        {
+            var originalContent = simplifiedLessons.First(m =>
+                m.Details == translationContent.First(n => n.UniqueKey == translatedContent.UniqueKey).TranslationPayload);
+            return new LessonPlan
+            {
+                Name = originalContent.Name,
+                Year = originalContent.Year,
+                Day = originalContent.Day,
+                Start = originalContent.Start,
+                Duration = originalContent.Duration,
+                Groups = originalContent.Groups,
+                Teachers = originalContent.Teachers,
+                Class = originalContent.Class,
+                Pl = _mapper.Map<LessonPlanDetails>(originalContent.Details),
+                En = _mapper.Map<LessonPlanDetails>(translatedContent.Translations[Language.En]),
+            };
+        });
+        return translatedLessons;
+            
     }
 }
