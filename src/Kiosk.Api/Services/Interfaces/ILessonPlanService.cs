@@ -14,4 +14,5 @@ public interface ILessonPlanService
     Task<GetMajorGroupsResponse> GetMajorGroups(string major, int year, CancellationToken cancellationToken);
     Task<IEnumerable<int>?> GetMajorYears(string major, CancellationToken cancellationToken);
 
+    Task CreateLessons(IEnumerable<CreateLessonPlanRequest> createLessonPlanRequests, CancellationToken cancellationToken);
 }
