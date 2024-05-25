@@ -27,7 +27,8 @@ namespace KioskAPI.Filters
             {
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
-                MaxAge = TimeSpan.FromHours(1)
+                Secure = true,
+                MaxAge = TimeSpan.FromHours(24)
             });
             
             await next();
