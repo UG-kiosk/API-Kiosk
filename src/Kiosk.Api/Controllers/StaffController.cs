@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.Staff;
 using KioskAPI.Filters;
+using Kiosk.Repositories.Interfaces;
+using KioskAPI.Filters;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -14,11 +16,13 @@ public class StaffController : ControllerBase
 {
     private readonly ILogger _logger;
     private readonly IStaffService _staffService;
+    private readonly IStaffRepository _staffRepository;
 
-    public StaffController(ILogger logger, IStaffService staffService)
+    public StaffController(ILogger logger, IStaffService staffService, IStaffRepository staffRepository)
     {
         _logger = logger;
         _staffService = staffService;
+        _staffRepository = staffRepository;
     }
 
     [HttpGet]
@@ -77,6 +81,42 @@ public class StaffController : ControllerBase
         {
             _logger.Error(exception,
                 "Something went wrong while creating staff. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
+    
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateStaffMember(string id, [FromBody] AcademicRequest staff, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var updatedStaffMember = await _staffService.UpdateStaffMember(id, staff, cancellationToken);
+            return updatedStaffMember is null ? NotFound() : Ok(updatedStaffMember);
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while updating staff member. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteStaffMember(string id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var deletedStaffMember = await _staffRepository.DeleteStaffMember(id, cancellationToken);
+            return deletedStaffMember is null ? NotFound() : Ok();
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while deleting staff member. {ExceptionMessage}",
                 exception.Message);
 
             return Problem();

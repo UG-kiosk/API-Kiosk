@@ -89,4 +89,8 @@ public class LessonPlanRepository : ILessonPlanRepository
     public async Task<IEnumerable<int>?> GetMajorYears(string major, CancellationToken cancellationToken)
         => (await _lessons.DistinctAsync(lessons => lessons.Year, lessons=>lessons.Name==major, cancellationToken: cancellationToken)).ToEnumerable();
 
+    public async Task CreateLessons(IEnumerable<LessonPlan> mappedLessons, CancellationToken cancellationToken)
+    {
+        await _lessons.InsertManyAsync(mappedLessons, cancellationToken: cancellationToken);
+    }
 }

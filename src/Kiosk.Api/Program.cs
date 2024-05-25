@@ -87,16 +87,25 @@ builder.Services.AddCors((options =>
 var app = builder.Build();
 
 
+app.UseMiddleware<GlobalRoutePrefixMiddleware>("/kiosk-api");
+
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(option => option.RouteTemplate = "kiosk-api/{documentName}/swagger.json");
+    app.UseSwaggerUI(option=>
+    {
+        option.SwaggerEndpoint("/kiosk-api/v1/swagger.json", "CodeMaze API");
+        option.RoutePrefix = "kiosk-api/swagger";
+    });
     var option = new RewriteOptions();
     option.AddRedirect("^$", "swagger");
     app.UseRewriter(option);
 }
+app.UsePathBase(new PathString("/kiosk-api"));
 
 app.UseHttpsRedirection();
+
 
 app.UseCors("corspolicy");
 

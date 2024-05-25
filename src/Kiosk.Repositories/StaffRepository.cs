@@ -66,4 +66,24 @@ public class StaffRepository : IStaffRepository
     {
         await _staff.InsertManyAsync(staff, cancellationToken: cancellationToken);
     }
+    
+    public async Task<Academic?> UpdateStaffMember(string academicId, Academic academic, CancellationToken cancellationToken)
+    {
+        var updateDefinition = Builders<Academic>.Update
+            .Set(a => a.Name, academic.Name)
+            .Set(a => a.Email, academic.Email)
+            .Set(a => a.Link, academic.Link)
+            .Set(a => a.Pl, academic.Pl)
+            .Set(a => a.En, academic.En);
+        
+        await _staff.UpdateOneAsync(a => a._id == academicId, updateDefinition, cancellationToken: cancellationToken);
+        var updatedDocument = await _staff.Find(a => a._id == academicId).FirstOrDefaultAsync(cancellationToken);
+        
+        return updatedDocument;
+    }
+    
+    public async Task<Academic?> DeleteStaffMember(string academicId, CancellationToken cancellationToken)
+    {
+        return await _staff.FindOneAndDeleteAsync(a => a._id == academicId, cancellationToken: cancellationToken);
+    }
 }

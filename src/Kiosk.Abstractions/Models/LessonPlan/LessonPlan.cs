@@ -33,7 +33,7 @@ public class LessonPlan
     
     public required List<string> Teachers { get; set; }
     
-    public dynamic? Class { get; set; }
+    public string? Class { get; set; }
     
     public required LessonPlanDetails Pl { get; set; }
     

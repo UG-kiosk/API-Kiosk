@@ -1,6 +1,7 @@
 using System.Collections;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Pagination;
 
 namespace Kiosk.Repositories.Interfaces;
 
@@ -14,13 +15,15 @@ public interface IEctsSubjectRepository
 
     Task<IEnumerable<EctsSubjectDocument>> GetEctsSubjects(CancellationToken cancellationToken);
 
-    Task<IEnumerable<EctsSubjectDocument>?> GetEctsSubjectsByName(string subject, CancellationToken cancellationToken);
+    Task<IEnumerable<EctsSubjectDocument>?> GetEctsSubjectsByName(string subject, Language language, CancellationToken cancellationToken);
 
-    Task<IEnumerable<string>?> GetMajors(Degree degree, CancellationToken cancellationToken);
+    Task<IEnumerable<string>?> GetMajors(Degree degree, Language language, CancellationToken cancellationToken);
 
     Task<IEnumerable<EctsSubjectDocument>?> GetSubjectsByMajor(EctsSubjectRequest ectsSubject, CancellationToken cancellationToken);
 
+    Task<(IEnumerable<EctsSubjectDocument>, Pagination pagination)> GetEctsByPagination(PaginationRequest pagination, CancellationToken cancellationToken);
+
     Task<IEnumerable<int>?> GetYears(BaseEctsSubjectRequest baseEctsSubjectRequest, CancellationToken cancellationToken);
 
-    Task<IEnumerable<string?>?> GetSpecialities(Degree degree, string major, CancellationToken cancellationToken);
+    Task<IEnumerable<string?>?> GetSpecialities(Degree degree, string major, Language language, CancellationToken cancellationToken);
 }

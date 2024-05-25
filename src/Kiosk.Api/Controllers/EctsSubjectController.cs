@@ -1,7 +1,11 @@
+using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Major;
+using Kiosk.Abstractions.Models.Pagination;
+using Kiosk.Abstractions.Models.Translation;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +19,20 @@ public class EctsSubjectController : ControllerBase
 {
     private readonly IEctsSubjectRepository _ectsSubjectRepository;
     private readonly IEctsSubjectService _ectsSubjectService;
+    private readonly ITranslatorService _translatorService;
     private readonly ILogger _logger;
 
     public EctsSubjectController(IEctsSubjectRepository ectsSubjectRepository, IEctsSubjectService ectsSubjectService,
-        ILogger logger)
+        ILogger logger, ITranslatorService translatorService)
     {
         _ectsSubjectRepository = ectsSubjectRepository;
         _ectsSubjectService = ectsSubjectService;
         _logger = logger;
+        _translatorService = translatorService;
     }
 
     /// <summary>Getting all ects subjects</summary>
+    /// <param name="paginationRequest">All pagination info</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <response code="200">All Ects subjects successfully retrieved</response>
     /// <response code="500">Internal Server Error</response>
@@ -36,13 +43,13 @@ public class EctsSubjectController : ControllerBase
     [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetEctsSubjects(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetEctsSubjects([FromQuery] PaginationRequest paginationRequest,CancellationToken cancellationToken)
     {
         try
         {
-            var ectsSubjects = await _ectsSubjectRepository.GetEctsSubjects(cancellationToken);
+            var (ectsSubjects, pagination) = await _ectsSubjectService.GetEcts(paginationRequest, cancellationToken);
 
-            return Ok(ectsSubjects);
+            return Ok(new { ectsSubjects, pagination });
         }
         catch (Exception ex)
         {
@@ -67,7 +74,7 @@ public class EctsSubjectController : ControllerBase
     [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> AddEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
+    public async Task<IActionResult> AddEctsSubject(EctsSubjectCreateRequest ectsSubjectDocument, CancellationToken cancellationToken)
     {
         try
         {
@@ -162,11 +169,11 @@ public class EctsSubjectController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetMajors([FromRoute, Required] Degree degree,[FromQuery, Optional] string? major, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetMajors([FromRoute, Required] Degree degree,[FromQuery, Optional] string? major, [FromQuery] Language language, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _ectsSubjectService.GetMajorsOrSpecialities(degree, major, cancellationToken);
+            var result = await _ectsSubjectService.GetMajorsOrSpecialities(degree, language, major, cancellationToken);
 
             return result is null ? NotFound() : Ok(result);
         }
