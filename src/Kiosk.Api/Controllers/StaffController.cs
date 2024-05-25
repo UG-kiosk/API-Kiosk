@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.Staff;
-using Kiosk.Repositories.Interfaces;
 using KioskAPI.Filters;
+using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
