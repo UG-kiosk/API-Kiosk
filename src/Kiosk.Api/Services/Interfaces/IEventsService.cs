@@ -12,5 +12,6 @@ public interface IEventsService
     
     Task<(IEnumerable<EventResponse>?, Pagination Pagination)> GetTranslatedEvents(Language language, int? page, int? itemsPerPage, CancellationToken cancellationToken);
     
-    Task CreateEvent(IEnumerable<CreateEventRequest> createEventRequests, CancellationToken cancellationToken);
+    Task CreateEvent(IEnumerable<EventRequest> createEventRequests, CancellationToken cancellationToken);
+    Task<EventResponse?> UpdateEvent(string eventId, EventRequest eventRequest, CancellationToken cancellationToken);
 }

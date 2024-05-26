@@ -2,7 +2,7 @@ using Kiosk.Abstractions.Enums;
 
 namespace Kiosk.Abstractions.Models.Events;
 
-public class CreateEventRequest
+public class EventRequest
 {
     public required EventDetails EventDetails { get; set; }
     public required string? Url { get; set; }

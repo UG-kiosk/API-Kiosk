@@ -11,4 +11,6 @@ public interface IEventsRepository
     Task<(IEnumerable<Event>?, Pagination Pagination)> GetManyEvents(Pagination pagination ,CancellationToken cancellationToken);
     
     Task CreateEvent(IEnumerable<Event> events, CancellationToken cancellationToken);
+    Task<Event?> UpdateEvent(string eventId, Event eventRequest, CancellationToken cancellationToken);
+    Task<Event?> DeleteEvent(string eventId, CancellationToken cancellationToken);
 }

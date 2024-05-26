@@ -61,15 +61,24 @@ public class EventsService : IEventsService
         return (eventsList.Select(events => MapTranslatedEvent(events, language)), updatedPagination);
     }
 
-    public async Task CreateEvent(IEnumerable<CreateEventRequest> createEventRequests,
+    public async Task CreateEvent(IEnumerable<EventRequest> createEventRequests,
         CancellationToken cancellationToken)
     {
         var mappedEvents = await TranslateEvents(createEventRequests, cancellationToken);
         await _eventsRepository.CreateEvent(mappedEvents, cancellationToken);
     }
+
+    public async Task<EventResponse?> UpdateEvent(string eventId, EventRequest eventRequest,
+        CancellationToken cancellationToken)
+    {
+        var translatedEvents = await TranslateEvents(new List<EventRequest> { eventRequest }, cancellationToken);
+        var updatedEvent = await _eventsRepository.UpdateEvent(eventId, translatedEvents.First(), cancellationToken);
+        
+        return _mapper.Map<EventResponse>(updatedEvent, opt => opt.Items["Language"] = Language.Pl);
+    }
     
     private async Task<IEnumerable<Event>> TranslateEvents(
-        IEnumerable<CreateEventRequest> createEventRequests,
+        IEnumerable<EventRequest> createEventRequests,
         CancellationToken cancellationToken)
     {
         var groupedByLanguage = createEventRequests.GroupBy(request => request.Language);

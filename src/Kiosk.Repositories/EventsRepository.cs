@@ -42,4 +42,24 @@ public class EventsRepository : IEventsRepository
     {
         await _eventsCollection.InsertManyAsync(events, cancellationToken: cancellationToken);
     }
+    
+    public async Task<Event?> UpdateEvent(string eventId, Event eventRequest, CancellationToken cancellationToken)
+    {
+        var update = Builders<Event>.Update
+            .Set(events => events.Pl, eventRequest.Pl)
+            .Set(events => events.En, eventRequest.En)
+            .Set(events => events.Date, eventRequest.Date);
+        await _eventsCollection.UpdateOneAsync(events => events._id == eventId, update, cancellationToken: cancellationToken);
+        var updatedEvent = await _eventsCollection.Find(events => events._id == eventId)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        return updatedEvent;
+    }
+    
+    public async Task<Event?> DeleteEvent(string eventId, CancellationToken cancellationToken)
+    {
+        return await _eventsCollection.FindOneAndDeleteAsync(events => events._id == eventId, cancellationToken: cancellationToken);
+    }
+    
+    
 }
