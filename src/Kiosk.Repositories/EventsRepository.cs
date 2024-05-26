@@ -28,8 +28,7 @@ public class EventsRepository : IEventsRepository
 
     
     
-    public async Task<(IEnumerable<Event>?, Pagination Pagination)> GetManyEvents(Pagination pagination, CancellationToken cancellationToken)
-    // => await _eventsCollection.Find(Builders<Event>.Filter.Empty).ToListAsync(cancellationToken);
+    public async Task<(IEnumerable<Event>?, Pagination Pagination)> GetManyEvents(Pagination pagination, CancellationToken cancellationToken) 
     {
         var filter = Builders<Event>.Filter.Empty;
         var events = await _eventsCollection.Find(filter)
