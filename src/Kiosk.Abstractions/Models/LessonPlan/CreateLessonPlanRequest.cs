@@ -8,7 +8,7 @@ public class CreateLessonPlanRequest
     
     public required int Year { get; set; }
     
-    public required DayOfWeek Day { get; set; }
+    public required String Day { get; set; }
     
     public required int Start { get; set; }
     
