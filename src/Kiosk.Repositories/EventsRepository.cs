@@ -4,6 +4,7 @@ using Kiosk.Abstractions.Models.Events;
 using MongoDB.Driver;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Repositories.Interfaces;
 using MongoDB.Driver;
 
@@ -25,6 +26,40 @@ public class EventsRepository : IEventsRepository
             .SortByDescending(events => events.Date)
             .FirstOrDefaultAsync(cancellationToken);
 
-    public async Task<IEnumerable<Event>?> GetManyEvents(CancellationToken cancellationToken)
-    => await _eventsCollection.Find(Builders<Event>.Filter.Empty).ToListAsync(cancellationToken);
+    
+    
+    public async Task<(IEnumerable<Event>?, Pagination Pagination)> GetManyEvents(Pagination pagination, CancellationToken cancellationToken) 
+    {
+        var filter = Builders<Event>.Filter.Empty;
+        var events = await _eventsCollection.Find(filter)
+            .SortByDescending(events => events.Date)
+            .Skip((pagination.Page - 1) * pagination.ItemsPerPage)
+            .Limit(pagination.ItemsPerPage)
+            .ToListAsync(cancellationToken);
+        return (events, pagination);
+    }
+    public async Task CreateEvent(IEnumerable<Event> events, CancellationToken cancellationToken)
+    {
+        await _eventsCollection.InsertManyAsync(events, cancellationToken: cancellationToken);
+    }
+    
+    public async Task<Event?> UpdateEvent(string eventId, Event eventRequest, CancellationToken cancellationToken)
+    {
+        var update = Builders<Event>.Update
+            .Set(events => events.Pl, eventRequest.Pl)
+            .Set(events => events.En, eventRequest.En)
+            .Set(events => events.Date, eventRequest.Date);
+        await _eventsCollection.UpdateOneAsync(events => events._id == eventId, update, cancellationToken: cancellationToken);
+        var updatedEvent = await _eventsCollection.Find(events => events._id == eventId)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        return updatedEvent;
+    }
+    
+    public async Task<Event?> DeleteEvent(string eventId, CancellationToken cancellationToken)
+    {
+        return await _eventsCollection.FindOneAndDeleteAsync(events => events._id == eventId, cancellationToken: cancellationToken);
+    }
+    
+    
 }
