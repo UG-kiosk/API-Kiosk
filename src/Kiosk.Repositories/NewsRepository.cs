@@ -41,4 +41,7 @@ public class NewsRepository : INewsRepository
     {
         await _news.InsertManyAsync(news, cancellationToken: cancellationToken);
     }
+
+    public async Task<News?> DeleteNews(string newsId, CancellationToken cancellationToken)
+        => await _news.FindOneAndDeleteAsync(n => n._id == newsId, cancellationToken: cancellationToken);
 }
