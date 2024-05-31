@@ -70,6 +70,13 @@ public class NewsService : INewsService
         await _newsRepository.CreateNews(mappedNews, cancellationToken);
     }
 
+    public async Task<NewsResponse?> UpdateNews(string id, CreateNewsRequest news, CancellationToken cancellationToken)
+    {
+        var translatedNews = await TranslateNews(new List<CreateNewsRequest> { news }, cancellationToken);
+        var updatedNews = await _newsRepository.UpdateNews(id, translatedNews.First(), cancellationToken);
+        return _mapper.Map<NewsResponse>(updatedNews);
+    }
+
     private async Task<IEnumerable<News>> TranslateNews(
         IEnumerable<CreateNewsRequest> createNewsRequests,
         CancellationToken cancellationToken)

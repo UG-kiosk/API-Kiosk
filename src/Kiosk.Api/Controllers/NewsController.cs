@@ -99,6 +99,30 @@ public class NewsController : ControllerBase
             return Problem();
         }
     }
+    
+    [HttpPut("{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(News), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateNews(string id, [FromBody] CreateNewsRequest news, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _newsService.UpdateNews(id, news, cancellationToken);
+
+            return result is null ? NotFound() : Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while updating news. {ExceptionMessage}",
+                ex.Message);
+
+            return Problem();
+        }
+    }
 
     [HttpDelete("{newsId}")]
     [Consumes("application/json")]

@@ -44,4 +44,20 @@ public class NewsRepository : INewsRepository
 
     public async Task<News?> DeleteNews(string newsId, CancellationToken cancellationToken)
         => await _news.FindOneAndDeleteAsync(n => n._id == newsId, cancellationToken: cancellationToken);
+
+    public async Task<News> UpdateNews(string id, News news, CancellationToken cancellationToken)
+    {
+        news._id = id;
+
+        var filter = Builders<News>.Filter.Eq(r => r._id, id);
+
+        var options = new FindOneAndReplaceOptions<News>
+        {
+            ReturnDocument = ReturnDocument.After
+        };
+
+        var updatedDocument = await _news.FindOneAndReplaceAsync(filter, news, options, cancellationToken);
+        
+        return updatedDocument;
+    }
 }

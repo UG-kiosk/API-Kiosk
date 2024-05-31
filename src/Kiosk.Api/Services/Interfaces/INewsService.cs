@@ -12,4 +12,5 @@ public interface INewsService
     Task<(IEnumerable<NewsResponse>?, Pagination Pagination)> GetTranslatedListOfNews(Source? source, Language language, PaginationRequest paginationRequest, CancellationToken cancellationToken);
     
     Task CreateNews(IEnumerable<CreateNewsRequest> createNewsRequests, CancellationToken cancellationToken);
+    Task<NewsResponse?> UpdateNews(string id, CreateNewsRequest news, CancellationToken cancellationToken);
 }

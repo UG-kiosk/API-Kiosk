@@ -12,4 +12,5 @@ public interface INewsRepository
     
     Task CreateNews(IEnumerable<News> news, CancellationToken cancellationToken);
     Task<News?> DeleteNews(string newsId, CancellationToken cancellationToken);
+    Task<News> UpdateNews(string id, News news, CancellationToken cancellationToken);
 }
