@@ -51,7 +51,8 @@ public class NewsService : INewsService
         return news != null ? MapTranslatedNews(news, language) : null;
     }
 
-    public async Task<(IEnumerable<NewsResponse>?, Pagination Pagination)> GetTranslatedListOfNews(Source? source, Language language, PaginationRequest paginationRequest, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<NewsResponse>?, Pagination Pagination)> GetTranslatedListOfNews(Source? source,
+        string? search, Language language, PaginationRequest paginationRequest, CancellationToken cancellationToken)
     {
         var pagination = new Pagination
         {
@@ -59,7 +60,7 @@ public class NewsService : INewsService
             ItemsPerPage = paginationRequest.ItemsPerPage
         };
         
-        var (newsList, updatedPagination) = await _newsRepository.GetManyNews(source, pagination, cancellationToken);
+        var (newsList, updatedPagination) = await _newsRepository.GetManyNews(source, search, pagination, cancellationToken);
 
         return (newsList.Select(news => MapTranslatedNews(news, language)), updatedPagination);
     }
