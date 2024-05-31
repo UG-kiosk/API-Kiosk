@@ -12,9 +12,9 @@ public interface IEctsSubjectRepository
     Task<EctsSubjectDocument?> DeleteEctsSubject(string id, CancellationToken cancellationToken);
 
     Task<EctsSubjectDocument?> UpdateEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken);
-
-    Task<IEnumerable<EctsSubjectDocument>> GetEctsSubjects(CancellationToken cancellationToken);
-
+    
+    Task<EctsSubjectDocument?> GetEctsSubjectsById(string id, CancellationToken cancellationToken);
+    
     Task<IEnumerable<EctsSubjectDocument>?> GetEctsSubjectsByName(string subject, Language language, CancellationToken cancellationToken);
 
     Task<IEnumerable<string>?> GetMajors(Degree degree, Language language, CancellationToken cancellationToken);

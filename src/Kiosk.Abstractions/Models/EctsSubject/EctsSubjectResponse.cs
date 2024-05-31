@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.Major;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Kiosk.Abstractions.Models;
 
@@ -27,6 +29,10 @@ public class SubjectsByYearAndTerm
 
 public class SubjectResponse : EctsSubjectDetails
 {
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? _id { get; set; }
+    
     public required int LectureHours { get; set; }
 
     public required int RecitationHours { get; set; }
