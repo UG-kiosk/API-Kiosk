@@ -89,7 +89,7 @@ public class NewsController : ControllerBase
         {
             await _newsService.CreateNews(createNewsRequests, cancellationToken);
 
-            return Ok();
+            return Ok("Created successfully");
         }
         catch (Exception exception)
         {
@@ -113,7 +113,7 @@ public class NewsController : ControllerBase
         {
             var result = await _newsService.UpdateNews(id, news, cancellationToken);
 
-            return result is null ? NotFound() : Ok();
+            return result is null ? NotFound() : Ok(result);
         }
         catch (Exception ex)
         {
