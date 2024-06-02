@@ -3,6 +3,7 @@ using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Enums.News;
 using Kiosk.Abstractions.Models.News;
 using Kiosk.Abstractions.Models.Pagination;
+using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -15,11 +16,12 @@ public class NewsController : ControllerBase
 {
     private readonly ILogger _logger;
     private readonly INewsService _newsService;
-
-    public NewsController(ILogger logger, INewsService newsService)
+    private readonly INewsRepository _newsRepository;
+    public NewsController(ILogger logger, INewsService newsService, INewsRepository newsRepository)
     {
         _logger = logger;
         _newsService = newsService;
+        _newsRepository = newsRepository;
     }
 
     [HttpGet("{id}")]
@@ -58,13 +60,14 @@ public class NewsController : ControllerBase
         CancellationToken cancellationToken,
         [FromQuery, Required] Language language,
         [FromQuery] PaginationRequest paginationRequest,
-        [FromQuery] Source? source=null
+        [FromQuery] Source? source=null,
+        [FromQuery] string? search=""
         )
     {
         try
         {
             var (content, pagination) = await _newsService
-                .GetTranslatedListOfNews(source, language, paginationRequest, cancellationToken);
+                .GetTranslatedListOfNews(source, search, language, paginationRequest, cancellationToken);
             return content is null ? NoContent() : Ok(new { content, pagination});
         }
         catch (Exception exception)
@@ -86,7 +89,7 @@ public class NewsController : ControllerBase
         {
             await _newsService.CreateNews(createNewsRequests, cancellationToken);
 
-            return Ok();
+            return Ok("Created successfully");
         }
         catch (Exception exception)
         {
@@ -94,6 +97,54 @@ public class NewsController : ControllerBase
                 "Something went wrong while creating news. {ExceptionMessage}",
                 exception.Message);
             
+            return Problem();
+        }
+    }
+    
+    [HttpPut("{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(News), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateNews(string id, [FromBody] CreateNewsRequest news, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _newsService.UpdateNews(id, news, cancellationToken);
+
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while updating news. {ExceptionMessage}",
+                ex.Message);
+
+            return Problem();
+        }
+    }
+
+    [HttpDelete("{newsId}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(News), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteNews(string newsId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _newsRepository.DeleteNews(newsId, cancellationToken);
+
+            return result is null ? NotFound() : Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while deleting news. {ExceptionMessage}",
+                ex.Message);
+
             return Problem();
         }
     }
