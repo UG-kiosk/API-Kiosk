@@ -109,4 +109,7 @@ public class LessonPlanRepository : ILessonPlanRepository
         pagination.HasNextPage = Pagination.CalculateHasNextPage(pagination.Page, pagination.TotalPages);
         return (lessons, pagination);
     }
+
+    public async Task<LessonPlan?> DeleteLesson(string lessonsId, CancellationToken cancellationToken)
+        => await _lessons.FindOneAndDeleteAsync(l => l._id == lessonsId, cancellationToken: cancellationToken);
 }

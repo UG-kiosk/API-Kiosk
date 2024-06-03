@@ -16,4 +16,5 @@ public interface ILessonPlanRepository
 
     Task CreateLessons(IEnumerable<LessonPlan> mappedLessons, CancellationToken cancellationToken);
     Task<(IEnumerable<LessonPlan>, Pagination Pagination)> GetLessons(Pagination pagination, CancellationToken cancellationToken);
+    Task<LessonPlan?> DeleteLesson(string lessonsId, CancellationToken cancellationToken);
 }

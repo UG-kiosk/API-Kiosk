@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.LessonPlan;
 using Kiosk.Abstractions.Models.Pagination;
+using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -14,11 +15,12 @@ public class LessonPlanController : ControllerBase
 {
     private readonly ILogger _logger;
     private readonly ILessonPlanService _lessonPlanService;
-
-    public LessonPlanController(ILogger logger, ILessonPlanService lessonPlanService)
+    private readonly ILessonPlanRepository _lessonPlanRepository;
+    public LessonPlanController(ILogger logger, ILessonPlanService lessonPlanService, ILessonPlanRepository lessonPlanRepository)
     {
         _logger = logger;
         _lessonPlanService = lessonPlanService;
+        _lessonPlanRepository = lessonPlanRepository;
     }
     
     [HttpGet("all")]
@@ -196,6 +198,30 @@ public class LessonPlanController : ControllerBase
             _logger.Error(exception,
                 "Something went wrong while creating lessons. {ExceptionMessage}",
                 exception.Message);
+
+            return Problem();
+        }
+    }
+    
+    [HttpDelete("{lessonsId}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(LessonPlan), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteLesson(string lessonsId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _lessonPlanRepository.DeleteLesson(lessonsId, cancellationToken);
+
+            return result is null ? NotFound() : Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while deleting news. {ExceptionMessage}",
+                ex.Message);
 
             return Problem();
         }
