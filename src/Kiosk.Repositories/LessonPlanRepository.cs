@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using Kiosk.Abstractions.Models.LessonPlan;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Repositories.Interfaces;
 using MongoDB.Driver;
 
@@ -92,5 +94,19 @@ public class LessonPlanRepository : ILessonPlanRepository
     public async Task CreateLessons(IEnumerable<LessonPlan> mappedLessons, CancellationToken cancellationToken)
     {
         await _lessons.InsertManyAsync(mappedLessons, cancellationToken: cancellationToken);
+    }
+
+    public async Task<(IEnumerable<LessonPlan>, Pagination Pagination)> GetLessons(Pagination pagination, CancellationToken cancellationToken)
+    {
+        Expression<Func<LessonPlan, bool>> filter = lesson => lesson.Year!=5;
+
+        var lessons = await _lessons.Find(filter).Skip((pagination.Page - 1) * pagination.ItemsPerPage)
+            .Limit(pagination.ItemsPerPage)
+            .ToListAsync(cancellationToken);
+        
+        var totalStaffRecords = await _lessons.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        pagination.TotalPages = Pagination.CalculateTotalPages((int)totalStaffRecords, pagination.ItemsPerPage);
+        pagination.HasNextPage = Pagination.CalculateHasNextPage(pagination.Page, pagination.TotalPages);
+        return (lessons, pagination);
     }
 }

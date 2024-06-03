@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.LessonPlan;
+using Kiosk.Abstractions.Models.Pagination;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -19,6 +20,36 @@ public class LessonPlanController : ControllerBase
         _logger = logger;
         _lessonPlanService = lessonPlanService;
     }
+    
+    [HttpGet("all")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<GetLessonPlanResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllLessons(
+        [FromQuery, Required] Language language,
+        [FromQuery] PaginationRequest paginationRequest,
+        CancellationToken cancellationToken
+        )
+    {
+        try
+        {
+            var (content, pagination)  = await _lessonPlanService
+                .GetAllLessons(language, paginationRequest, cancellationToken);
+
+            return content is null ? NoContent() : Ok(new { content, pagination});
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while getting lessons. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
+    
     
     [HttpGet("lectures")]
     [Consumes("application/json")]

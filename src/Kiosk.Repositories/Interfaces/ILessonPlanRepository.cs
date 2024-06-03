@@ -1,4 +1,5 @@
 using Kiosk.Abstractions.Models.LessonPlan;
+using Kiosk.Abstractions.Models.Pagination;
 using MongoDB.Driver;
 
 namespace Kiosk.Repositories.Interfaces;
@@ -14,4 +15,5 @@ public interface ILessonPlanRepository
     Task<IEnumerable<int>?> GetMajorYears(string major, CancellationToken cancellationToken);
 
     Task CreateLessons(IEnumerable<LessonPlan> mappedLessons, CancellationToken cancellationToken);
+    Task<(IEnumerable<LessonPlan>, Pagination Pagination)> GetLessons(Pagination pagination, CancellationToken cancellationToken);
 }

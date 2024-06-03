@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using AutoMapper;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.LessonPlan;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Abstractions.Models.Translation;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
@@ -92,6 +93,19 @@ public class LessonPlanService : ILessonPlanService
     {
         var mappedLessons = await TranslateLessons(createLessonPlanRequests, cancellationToken);
         await _lessonPlanRepository.CreateLessons(mappedLessons, cancellationToken);
+    }
+
+    public async Task<(IEnumerable<GetLessonPlanResponse>?,Pagination Pagination)> GetAllLessons(Language language, PaginationRequest paginationRequest, CancellationToken cancellationToken)
+    {
+        var pagination = new Pagination
+        {
+            Page = paginationRequest.Page,
+            ItemsPerPage = paginationRequest.ItemsPerPage
+        };
+        
+        var (lessonList, updatedPagination) = await _lessonPlanRepository.GetLessons(pagination, cancellationToken);
+
+        return (lessonList?.Select(lesson => MapTranslatedLessons(lesson, language)), updatedPagination);
     }
 
     private async Task<IEnumerable<LessonPlan>> TranslateLessons(IEnumerable<CreateLessonPlanRequest> createLessonPlanRequests, CancellationToken cancellationToken)
