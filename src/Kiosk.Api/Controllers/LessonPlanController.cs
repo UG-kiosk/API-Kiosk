@@ -32,13 +32,15 @@ public class LessonPlanController : ControllerBase
     public async Task<IActionResult> GetAllLessons(
         [FromQuery, Required] Language language,
         [FromQuery] PaginationRequest paginationRequest,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        [FromQuery] string? search="",
+        [FromQuery] string? day=""
         )
     {
         try
         {
             var (content, pagination)  = await _lessonPlanService
-                .GetAllLessons(language, paginationRequest, cancellationToken);
+                .GetAllLessons(day, search, language, paginationRequest, cancellationToken);
 
             return content is null ? NoContent() : Ok(new { content, pagination});
         }

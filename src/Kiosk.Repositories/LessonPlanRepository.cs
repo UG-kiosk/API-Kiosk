@@ -96,9 +96,13 @@ public class LessonPlanRepository : ILessonPlanRepository
         await _lessons.InsertManyAsync(mappedLessons, cancellationToken: cancellationToken);
     }
 
-    public async Task<(IEnumerable<LessonPlan>, Pagination Pagination)> GetLessons(Pagination pagination, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<LessonPlan>, Pagination Pagination)> GetLessons(string? day, string? search,
+        Pagination pagination, CancellationToken cancellationToken)
     {
-        Expression<Func<LessonPlan, bool>> filter = lesson => lesson.Year!=5;
+        Expression<Func<LessonPlan, bool>> filter = lesson => 
+            (search == null || lesson.Name.Contains(search) || lesson.Teachers.Contains(search))
+            && (day == null || lesson.Day.Contains(day));
+
 
         var lessons = await _lessons.Find(filter).Skip((pagination.Page - 1) * pagination.ItemsPerPage)
             .Limit(pagination.ItemsPerPage)

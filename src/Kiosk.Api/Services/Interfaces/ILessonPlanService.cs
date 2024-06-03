@@ -16,6 +16,7 @@ public interface ILessonPlanService
     Task<IEnumerable<int>?> GetMajorYears(string major, CancellationToken cancellationToken);
 
     Task CreateLessons(IEnumerable<CreateLessonPlanRequest> createLessonPlanRequests, CancellationToken cancellationToken);
-    Task<(IEnumerable<GetLessonPlanResponse?>,Pagination Pagination)> GetAllLessons(Language language, PaginationRequest paginationRequest,
+    Task<(IEnumerable<GetLessonPlanResponse?>, Pagination Pagination)> GetAllLessons(string? day, string? search,
+        Language language, PaginationRequest paginationRequest,
         CancellationToken cancellationToken);
 }

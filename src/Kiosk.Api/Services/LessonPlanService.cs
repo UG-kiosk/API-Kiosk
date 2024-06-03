@@ -95,7 +95,8 @@ public class LessonPlanService : ILessonPlanService
         await _lessonPlanRepository.CreateLessons(mappedLessons, cancellationToken);
     }
 
-    public async Task<(IEnumerable<GetLessonPlanResponse>?,Pagination Pagination)> GetAllLessons(Language language, PaginationRequest paginationRequest, CancellationToken cancellationToken)
+    public async Task<(IEnumerable<GetLessonPlanResponse?>, Pagination Pagination)> GetAllLessons(string? day,
+        string? search, Language language, PaginationRequest paginationRequest, CancellationToken cancellationToken)
     {
         var pagination = new Pagination
         {
@@ -103,7 +104,7 @@ public class LessonPlanService : ILessonPlanService
             ItemsPerPage = paginationRequest.ItemsPerPage
         };
         
-        var (lessonList, updatedPagination) = await _lessonPlanRepository.GetLessons(pagination, cancellationToken);
+        var (lessonList, updatedPagination) = await _lessonPlanRepository.GetLessons(day, search, pagination, cancellationToken);
 
         return (lessonList?.Select(lesson => MapTranslatedLessons(lesson, language)), updatedPagination);
     }
