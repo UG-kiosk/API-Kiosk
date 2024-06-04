@@ -54,6 +54,32 @@ public class LessonPlanController : ControllerBase
         }
     }
     
+    [HttpGet("lesson/{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(GetLessonPlanResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetLesson(
+        string id,
+        CancellationToken cancellationToken,
+        [FromQuery, Required] Language language)
+    {
+        try
+        {
+            var lesson = await _lessonPlanService.GetLesson(id, language, cancellationToken);
+            return Ok(lesson);
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while getting lesson. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
+    
     
     [HttpGet("lectures")]
     [Consumes("application/json")]
@@ -211,7 +237,7 @@ public class LessonPlanController : ControllerBase
     [ProducesResponseType(typeof(LessonPlan), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteLesson(string lessonsId, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteLesson([FromRoute, Required] string lessonsId, CancellationToken cancellationToken)
     {
         try
         {

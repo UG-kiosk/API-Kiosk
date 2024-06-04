@@ -116,4 +116,9 @@ public class LessonPlanRepository : ILessonPlanRepository
 
     public async Task<LessonPlan?> DeleteLesson(string lessonsId, CancellationToken cancellationToken)
         => await _lessons.FindOneAndDeleteAsync(l => l._id == lessonsId, cancellationToken: cancellationToken);
+
+    public async Task<LessonPlan> GetLesson(string id, CancellationToken cancellationToken)
+        => await _lessons.Find(lesson => lesson._id == id)
+            .FirstOrDefaultAsync(cancellationToken);
+
 }

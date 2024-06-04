@@ -19,4 +19,6 @@ public interface ILessonPlanService
     Task<(IEnumerable<GetLessonPlanResponse?>, Pagination Pagination)> GetAllLessons(string? day, string? search,
         Language language, PaginationRequest paginationRequest,
         CancellationToken cancellationToken);
+
+    Task<GetLessonPlanResponse?> GetLesson(string id, Language language, CancellationToken cancellationToken);
 }

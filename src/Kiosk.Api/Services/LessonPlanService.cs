@@ -109,6 +109,12 @@ public class LessonPlanService : ILessonPlanService
         return (lessonList?.Select(lesson => MapTranslatedLessons(lesson, language)), updatedPagination);
     }
 
+    public async Task<GetLessonPlanResponse?> GetLesson(string id, Language language, CancellationToken cancellationToken)
+    {
+        var lesson = await _lessonPlanRepository.GetLesson(id, cancellationToken);
+        return lesson != null ? MapTranslatedLessons(lesson, language) : null;
+    }
+
     private async Task<IEnumerable<LessonPlan>> TranslateLessons(IEnumerable<CreateLessonPlanRequest> createLessonPlanRequests, CancellationToken cancellationToken)
     {
         ImmutableList<Language> supportedLanguages = new List<Language> { Language.En, Language.Pl }.ToImmutableList();
