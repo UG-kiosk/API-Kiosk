@@ -231,6 +231,31 @@ public class LessonPlanController : ControllerBase
         }
     }
     
+    [HttpPut("lesson/{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(GetLessonPlanResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateLesson(string id, [FromBody] CreateLessonPlanRequest lesson, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _lessonPlanService.UpdateLesson(id, lesson, cancellationToken);
+
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while updating lesson. {ExceptionMessage}",
+                ex.Message);
+
+            return Problem();
+        }
+    }
+
+    
     [HttpDelete("{lessonsId}")]
     [Consumes("application/json")]
     [Produces("application/json")]

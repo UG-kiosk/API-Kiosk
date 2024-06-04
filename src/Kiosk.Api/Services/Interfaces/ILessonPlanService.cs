@@ -21,4 +21,5 @@ public interface ILessonPlanService
         CancellationToken cancellationToken);
 
     Task<GetLessonPlanResponse?> GetLesson(string id, Language language, CancellationToken cancellationToken);
+    Task<GetLessonPlanResponse?> UpdateLesson(string id, CreateLessonPlanRequest lesson, CancellationToken cancellationToken);
 }

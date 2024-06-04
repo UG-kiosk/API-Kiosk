@@ -121,4 +121,19 @@ public class LessonPlanRepository : ILessonPlanRepository
         => await _lessons.Find(lesson => lesson._id == id)
             .FirstOrDefaultAsync(cancellationToken);
 
+    public async Task<LessonPlan> UpdateLesson(string id, LessonPlan lesson, CancellationToken cancellationToken)
+    {
+        lesson._id = id;
+
+        var filter = Builders<LessonPlan>.Filter.Eq(r => r._id, id);
+
+        var options = new FindOneAndReplaceOptions<LessonPlan>
+        {
+            ReturnDocument = ReturnDocument.After
+        };
+
+        var updatedDocument = await _lessons.FindOneAndReplaceAsync(filter, lesson, options, cancellationToken);
+        
+        return updatedDocument;
+    }
 }

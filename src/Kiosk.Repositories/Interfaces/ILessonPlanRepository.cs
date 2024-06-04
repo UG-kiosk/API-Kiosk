@@ -19,4 +19,5 @@ public interface ILessonPlanRepository
         Pagination pagination, CancellationToken cancellationToken);
     Task<LessonPlan?> DeleteLesson(string lessonsId, CancellationToken cancellationToken);
     Task<LessonPlan> GetLesson(string id, CancellationToken cancellationToken);
+    Task<LessonPlan> UpdateLesson(string id, LessonPlan lesson, CancellationToken cancellationToken);
 }
