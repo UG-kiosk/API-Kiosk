@@ -8,4 +8,5 @@ public interface IMajorsRepository
     Task<IEnumerable<MajorDocument>> GetMajors(FindMajorsRequest findMajorsRequest, CancellationToken cancellationToken);
     Task<MajorDocument?> DeleteMajor(string id, CancellationToken cancellationToken);
     Task CreateMajors(IEnumerable<MajorDocument> majorDocuments, CancellationToken cancellationToken);
+    Task<MajorDocument?> UpdateMajor(string id, MajorDocument major, CancellationToken cancellationToken);
 }
