@@ -86,7 +86,39 @@ public class StaffController : ControllerBase
         }
     }
     
+    [HttpPost("scrape")]
+    [ServiceFilter(typeof(ValidateTokenFilter))]
+    public async Task<IActionResult> CreateOrReplaceStaff(CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync("http://localhost:3001/scrapers-kiosk-api/scrape/staff", cancellationToken);
+
+            response.EnsureSuccessStatusCode();
+
+            var staff = await response.Content.ReadFromJsonAsync<IEnumerable<AcademicRequest>>(cancellationToken: cancellationToken);
+
+            if (staff is null)
+            {
+                return NotFound();
+            }
+            await _staffService.CreateOrReplaceStaff(staff, cancellationToken);
+
+            return Ok();
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while creating or replacing staff. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
+    
     [HttpPut("{id}")]
+    [ServiceFilter(typeof(ValidateTokenFilter))]
     public async Task<IActionResult> UpdateStaffMember(string id, [FromBody] AcademicRequest staff, CancellationToken cancellationToken)
     {
         try
@@ -105,6 +137,7 @@ public class StaffController : ControllerBase
     }
     
     [HttpDelete("{id}")]
+    [ServiceFilter(typeof(ValidateTokenFilter))]
     public async Task<IActionResult> DeleteStaffMember(string id, CancellationToken cancellationToken)
     {
         try

@@ -53,6 +53,12 @@ public class StaffService : IStaffService
         await _staffRepository.CreateStaff(mappedStaff, cancellationToken);
     }
     
+    public async Task CreateOrReplaceStaff(IEnumerable<AcademicRequest> staff, CancellationToken cancellationToken)
+    {
+        var mappedStaff = await TranslateStaff(staff, cancellationToken);
+        await _staffRepository.CreateOrReplaceStaff(mappedStaff, cancellationToken);
+    }
+    
     public async Task<AcademicResponse?> UpdateStaffMember(string academicId, AcademicRequest academic, CancellationToken cancellationToken)
     {
         var translatedStaff = await TranslateStaff(new List<AcademicRequest> { academic }, cancellationToken);
