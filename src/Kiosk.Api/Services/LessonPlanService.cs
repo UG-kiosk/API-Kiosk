@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using AutoMapper;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.LessonPlan;
+using Kiosk.Abstractions.Models.Pagination;
 using Kiosk.Abstractions.Models.Translation;
 using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
@@ -92,6 +93,33 @@ public class LessonPlanService : ILessonPlanService
     {
         var mappedLessons = await TranslateLessons(createLessonPlanRequests, cancellationToken);
         await _lessonPlanRepository.CreateLessons(mappedLessons, cancellationToken);
+    }
+
+    public async Task<(IEnumerable<GetLessonPlanResponse?>, Pagination Pagination)> GetAllLessons(string? day,
+        string? search, Language language, PaginationRequest paginationRequest, CancellationToken cancellationToken)
+    {
+        var pagination = new Pagination
+        {
+            Page = paginationRequest.Page,
+            ItemsPerPage = paginationRequest.ItemsPerPage
+        };
+        
+        var (lessonList, updatedPagination) = await _lessonPlanRepository.GetLessons(day, search, pagination, cancellationToken);
+
+        return (lessonList?.Select(lesson => MapTranslatedLessons(lesson, language)), updatedPagination);
+    }
+
+    public async Task<GetLessonPlanResponse?> GetLesson(string id, Language language, CancellationToken cancellationToken)
+    {
+        var lesson = await _lessonPlanRepository.GetLesson(id, cancellationToken);
+        return lesson != null ? MapTranslatedLessons(lesson, language) : null;
+    }
+
+    public async Task<GetLessonPlanResponse?> UpdateLesson(string id, CreateLessonPlanRequest lesson, CancellationToken cancellationToken)
+    {
+        var translatedLesson = await TranslateLessons(new List<CreateLessonPlanRequest> { lesson }, cancellationToken);
+        var updatedNews = await _lessonPlanRepository.UpdateLesson(id, translatedLesson.First(), cancellationToken);
+        return _mapper.Map<GetLessonPlanResponse>(updatedNews);
     }
 
     private async Task<IEnumerable<LessonPlan>> TranslateLessons(IEnumerable<CreateLessonPlanRequest> createLessonPlanRequests, CancellationToken cancellationToken)

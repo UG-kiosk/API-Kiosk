@@ -21,6 +21,6 @@ public class CreateLessonPlanSimplified
     public string? Class { get; set; }
     
     public required LessonPlanContentSimplified Details { get; set; }
-    
-    public required Language SourceLanguage { get; set; }
+
+    public Language SourceLanguage { get; set; } = Language.Pl;
 }

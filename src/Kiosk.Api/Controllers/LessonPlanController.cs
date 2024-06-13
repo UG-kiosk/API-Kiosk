@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Kiosk.Abstractions.Enums;
 using Kiosk.Abstractions.Models.LessonPlan;
+using Kiosk.Abstractions.Models.Pagination;
+using Kiosk.Repositories.Interfaces;
 using KioskAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using ILogger = Serilog.ILogger;
@@ -13,12 +15,71 @@ public class LessonPlanController : ControllerBase
 {
     private readonly ILogger _logger;
     private readonly ILessonPlanService _lessonPlanService;
-
-    public LessonPlanController(ILogger logger, ILessonPlanService lessonPlanService)
+    private readonly ILessonPlanRepository _lessonPlanRepository;
+    public LessonPlanController(ILogger logger, ILessonPlanService lessonPlanService, ILessonPlanRepository lessonPlanRepository)
     {
         _logger = logger;
         _lessonPlanService = lessonPlanService;
+        _lessonPlanRepository = lessonPlanRepository;
     }
+    
+    [HttpGet("all")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<GetLessonPlanResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllLessons(
+        [FromQuery, Required] Language language,
+        [FromQuery] PaginationRequest paginationRequest,
+        CancellationToken cancellationToken,
+        [FromQuery] string? search="",
+        [FromQuery] string? day=""
+        )
+    {
+        try
+        {
+            var (content, pagination)  = await _lessonPlanService
+                .GetAllLessons(day, search, language, paginationRequest, cancellationToken);
+
+            return content is null ? NoContent() : Ok(new { content, pagination});
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while getting lessons. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
+    
+    [HttpGet("lesson/{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(GetLessonPlanResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetLesson(
+        string id,
+        CancellationToken cancellationToken,
+        [FromQuery, Required] Language language)
+    {
+        try
+        {
+            var lesson = await _lessonPlanService.GetLesson(id, language, cancellationToken);
+            return Ok(lesson);
+        }
+        catch (Exception exception)
+        {
+            _logger.Error(exception,
+                "Something went wrong while getting lesson. {ExceptionMessage}",
+                exception.Message);
+
+            return Problem();
+        }
+    }
+    
     
     [HttpGet("lectures")]
     [Consumes("application/json")]
@@ -165,6 +226,55 @@ public class LessonPlanController : ControllerBase
             _logger.Error(exception,
                 "Something went wrong while creating lessons. {ExceptionMessage}",
                 exception.Message);
+
+            return Problem();
+        }
+    }
+    
+    [HttpPut("lesson/{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(GetLessonPlanResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateLesson(string id, [FromBody] CreateLessonPlanRequest lesson, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _lessonPlanService.UpdateLesson(id, lesson, cancellationToken);
+
+            return result is null ? NotFound() : Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while updating lesson. {ExceptionMessage}",
+                ex.Message);
+
+            return Problem();
+        }
+    }
+
+    
+    [HttpDelete("{lessonsId}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(LessonPlan), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteLesson([FromRoute, Required] string lessonsId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _lessonPlanRepository.DeleteLesson(lessonsId, cancellationToken);
+
+            return result is null ? NotFound() : Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while deleting news. {ExceptionMessage}",
+                ex.Message);
 
             return Problem();
         }

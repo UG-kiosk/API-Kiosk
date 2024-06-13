@@ -27,7 +27,7 @@ public class NewsRepository : INewsRepository
         Source sourceType;
         Enum.TryParse(source.ToString(), out sourceType);
         Expression<Func<News, bool>> filter = news => 
-            (source == null || news.Source == source) &&
+            (source == null || news.Source == sourceType) &&
             (search == null || news.Pl.Title.Contains(search) || news.Pl.Body.Contains(search) || news.Pl.ShortBody.Contains(search));
         var news = await _news.Find(filter).Skip((pagination.Page - 1) * pagination.ItemsPerPage)
             .SortByDescending(news => news.Datetime)

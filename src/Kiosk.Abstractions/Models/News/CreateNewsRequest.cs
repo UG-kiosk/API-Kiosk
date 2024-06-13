@@ -19,6 +19,6 @@ public class CreateNewsRequest
 
     public required Category Category { get; set; }
 
-    public required Language SourceLanguage { get; set; }
+    public Language SourceLanguage { get; set; } = Language.Pl;
 
 }

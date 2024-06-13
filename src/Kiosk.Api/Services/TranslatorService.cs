@@ -11,6 +11,7 @@ public class TranslatorService : ITranslatorService
     public TranslatorService(HttpClient httpClient)
     {
         _httpClient = httpClient;
+        _httpClient.Timeout = TimeSpan.FromMinutes(10);
     }
 
       public async Task<IEnumerable<TranslationResponse<T>>> Translate<T>(IEnumerable<TranslationRequest<T>> translationContent, Language sourceLanguage, IEnumerable<Language> targetLanguages, CancellationToken cancellationToken)
