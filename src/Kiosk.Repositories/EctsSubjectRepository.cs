@@ -24,7 +24,7 @@ public class EctsSubjectRepository : IEctsSubjectRepository
        => (await _ectsSubjects.FindAsync(_ => true, cancellationToken: cancellationToken)).ToEnumerable();
 
     public async Task<IEnumerable<EctsSubjectDocument>?> GetEctsSubjectsByName(string subject,Language language, CancellationToken cancellationToken)
-        => (await _ectsSubjects.FindAsync(r => r[language].Subject == subject, cancellationToken: cancellationToken))
+        => (await _ectsSubjects.FindAsync(r=> r.Pl.Subject == subject, cancellationToken: cancellationToken))
             .ToEnumerable();
 
     public async Task CreateEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
@@ -42,12 +42,23 @@ public class EctsSubjectRepository : IEctsSubjectRepository
 
         return updatedDocument;
     }
+    
+    public async Task<EctsSubjectDocument?> GetEctsSubjectsById(string id, CancellationToken cancellationToken)
+    {
+        var filter = Builders<EctsSubjectDocument>.Filter.Eq(r => r._id, id);
+        
+        var ectsSubjectDocument =
+            (await _ectsSubjects.FindAsync(filter, cancellationToken: cancellationToken)).FirstOrDefault();
+
+        return ectsSubjectDocument;
+    }
+
 
     public async Task<IEnumerable<string>?> GetMajors(Degree degree, Language language, CancellationToken cancellationToken)=>
         (await _ectsSubjects.DistinctAsync<string>( $"{language}.major", DegreeFilter(degree),cancellationToken: cancellationToken)).ToEnumerable();
     
     public async Task<IEnumerable<string?>?> GetSpecialities(Degree degree, string major, Language language, CancellationToken cancellationToken)
-        => (await _ectsSubjects.DistinctAsync<string>($"{language}.subject", DegreeFilter(degree) & MajorOrSpecialityFilter(major, null, language), cancellationToken: cancellationToken)).ToEnumerable();
+        => (await _ectsSubjects.DistinctAsync<string>($"{language}.speciality", DegreeFilter(degree) & MajorOrSpecialityFilter(major, null, language), cancellationToken: cancellationToken)).ToEnumerable();
     
     public async Task<IEnumerable<EctsSubjectDocument>?> GetSubjectsByMajor(EctsSubjectRequest ectsSubject, CancellationToken cancellationToken)
     {

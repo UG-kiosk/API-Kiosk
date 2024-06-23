@@ -8,6 +8,10 @@ public interface IEctsSubjectService
 {
     Task<(IEnumerable<EctsSubjectCreateRequest>, Pagination Pagination)> GetEcts(PaginationRequest paginationRequest, CancellationToken cancellationToken);
     
+    Task<EctsSubjectCreateRequest> GetOneEcts(string id, CancellationToken cancellationToken);
+    
+    Task<EctsSubjectDocument?> UpdateEctsSubject(EctsSubjectCreateRequest ectsSubjectDocument, CancellationToken cancellationToken);
+    
     Task<bool> AddEctsSubject(EctsSubjectCreateRequest ectsSubjectDocument, CancellationToken cancellationToken);
     
     Task<EctsSubjectResponse> GetSubjectsByMajor(EctsSubjectRequest ectsSubjectRequest, CancellationToken cancellationToken);

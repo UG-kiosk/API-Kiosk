@@ -59,6 +59,40 @@ public class EctsSubjectService : IEctsSubjectService
         return (ectsResponse, paginationResponse);
     }
     
+    public async Task<EctsSubjectCreateRequest> GetOneEcts(string id, CancellationToken cancellationToken)
+    {
+        var ectsSubjectDocument = await _ectsSubjectRepository.GetEctsSubjectsById(id, cancellationToken);
+
+        var ectsResponse = new EctsSubjectCreateRequest()
+        {
+            Degree = ectsSubjectDocument.Degree,
+            Ects = ectsSubjectDocument.Ects,
+            Major = ectsSubjectDocument.Pl.Major,
+            Subject = ectsSubjectDocument.Pl.Subject,
+            Term = ectsSubjectDocument.Term,
+            Year = ectsSubjectDocument.Year,
+            LabsHours = ectsSubjectDocument.LabsHours,
+            LectureHours = ectsSubjectDocument.LectureHours,
+            RecitationHours = ectsSubjectDocument.RecitationHours,
+            RecruitmentYear = ectsSubjectDocument.RecruitmentYear,
+            Pass = ectsSubjectDocument.Pass,
+            Speciality = ectsSubjectDocument.Pl.Speciality,
+            _id = ectsSubjectDocument._id
+        };
+        
+        return ectsResponse;
+    }
+    
+    public async Task<EctsSubjectDocument?> UpdateEctsSubject(EctsSubjectCreateRequest ectsSubjectDocument, CancellationToken cancellationToken)
+    {
+        var translatedDocument = (await GetTranslatedEcts(new[] { ectsSubjectDocument }, Language.Pl, cancellationToken)).FirstOrDefault();
+        
+        var existingDocument = await _ectsSubjectRepository.UpdateEctsSubject(translatedDocument, cancellationToken);
+
+
+        return existingDocument;
+    }
+    
     public async Task<IEnumerable<string>?> GetMajorsOrSpecialities(Degree degree, Language language, string? major, CancellationToken cancellationToken)
     {
         var result = major is null
@@ -128,7 +162,7 @@ public class EctsSubjectService : IEctsSubjectService
             {
                 Major = subject.Major,
                 Subject = subject.Subject,
-                Speciality = subject.Speciality
+                Speciality = subject.Speciality ?? ""
             };
 
             var translationContent = new TranslationRequest<EctsSubjectDetails>()
@@ -155,6 +189,7 @@ public class EctsSubjectService : IEctsSubjectService
 
             return new EctsSubjectDocument()
             {
+                _id = createDocumentDto._id,
                 Pl = sourceLanguage == Language.Pl ?
                     new EctsSubjectDetails()
                     {

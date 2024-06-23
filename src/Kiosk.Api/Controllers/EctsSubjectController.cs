@@ -60,6 +60,36 @@ public class EctsSubjectController : ControllerBase
             return Problem();
         }
     }
+    
+    /// <summary>Getting all ects subjects</summary>
+    /// <param name="paginationRequest">All pagination info</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <response code="200">All Ects subjects successfully retrieved</response>
+    /// <response code="500">Internal Server Error</response>
+    /// <returns>The result of the request, which should contain the list of all Ects Subjects</returns>
+    [HttpGet("document/{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetEctsSubject([FromRoute] string id,CancellationToken cancellationToken)
+    {
+        try
+        {
+            var ectsSubjects = await _ectsSubjectService.GetOneEcts(id, cancellationToken);
+
+            return Ok(ectsSubjects);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex,
+                "Something went wrong while getting ectsSubjects. {ExceptionMessage}",
+                ex.Message);
+
+            return Problem();
+        }
+    }
 
     /// <summary>Adding the ects subject</summary>
     /// <param name="ectsSubjectDocument">New ects subject</param>
@@ -139,11 +169,11 @@ public class EctsSubjectController : ControllerBase
     [ProducesResponseType(typeof(EctsSubjectDocument), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateEctsSubject(EctsSubjectDocument ectsSubjectDocument, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateEctsSubject(EctsSubjectCreateRequest ectsSubjectDocument, CancellationToken cancellationToken)
     {
         try
         {
-            var result = await _ectsSubjectRepository.UpdateEctsSubject(ectsSubjectDocument, cancellationToken);
+            var result = await _ectsSubjectService.UpdateEctsSubject(ectsSubjectDocument, cancellationToken);
 
             return result is null ? NotFound() : Ok();
         }
