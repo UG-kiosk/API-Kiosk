@@ -66,6 +66,33 @@ public class StaffRepository : IStaffRepository
     {
         await _staff.InsertManyAsync(staff, cancellationToken: cancellationToken);
     }
+
+    public async Task CreateOrReplaceStaff(IEnumerable<Academic> staff, CancellationToken cancellationToken)
+    {
+        var operations = new List<WriteModel<Academic>>();
+
+        foreach (var academic in staff)
+        {
+            if (academic._id == null)
+            {
+                academic._id = ObjectId.GenerateNewId().ToString(); // Generate a new unique _id if it's null
+            }
+
+            var filter = Builders<Academic>.Filter.Eq(a => a.Name, academic.Name);
+            var update = Builders<Academic>.Update
+                .SetOnInsert(a => a._id, academic._id) // Set _id only on insert
+                .Set(a => a.Name, academic.Name)
+                .Set(a => a.Email, academic.Email)
+                .Set(a => a.Link, academic.Link)
+                .Set(a => a.Pl, academic.Pl)
+                .Set(a => a.En, academic.En);
+
+            var upsertOneOperation = new UpdateOneModel<Academic>(filter, update) { IsUpsert = true };
+            operations.Add(upsertOneOperation);
+        }
+
+        await _staff.BulkWriteAsync(operations, cancellationToken: cancellationToken);
+    }
     
     public async Task<Academic?> UpdateStaffMember(string academicId, Academic academic, CancellationToken cancellationToken)
     {

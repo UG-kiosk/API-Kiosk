@@ -21,7 +21,7 @@ public class CreateLessonPlanRequest
     public string? Class { get; set; }
     
     public required LessonPlanDetails Details { get; set; }
-    
-    public required Language SourceLanguage { get; set; }
-    
+
+    public Language SourceLanguage { get; set; } = Language.Pl;
+
 }

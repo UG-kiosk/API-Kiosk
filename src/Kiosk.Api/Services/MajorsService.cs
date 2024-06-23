@@ -67,6 +67,13 @@ public class MajorsService : IMajorsService
         await _majorsRepository.CreateMajors(mappedMajors, cancellationToken);
     }
 
+    public async Task<MajorResponse?> UpdateMajor(string id, CreateMajorRequest updateMajorRequest, CancellationToken cancellationToken)
+    {
+        var translatedMajors = await TranslateMajors(new List<CreateMajorRequest> { updateMajorRequest }, cancellationToken);
+        var updatedMajors = await _majorsRepository.UpdateMajor(id,translatedMajors.First(), cancellationToken);
+        return _mapper.Map<MajorResponse>(updatedMajors);
+    }
+
     private async Task<IEnumerable<MajorDocument>> TranslateMajors(
         IEnumerable<CreateMajorRequest> createMajorsRequest,
         CancellationToken cancellationToken)

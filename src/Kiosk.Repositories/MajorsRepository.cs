@@ -49,4 +49,21 @@ public class MajorsRepository : IMajorsRepository
     {
         await _majors.InsertManyAsync(majorDocuments, cancellationToken: cancellationToken);
     }
+
+    public async Task<MajorDocument?> UpdateMajor(string id, MajorDocument major, CancellationToken cancellationToken)
+    {
+        major._id = id;
+        
+        var filter = Builders<MajorDocument>.Filter.Eq(r => r._id, id);
+        
+        var options = new FindOneAndReplaceOptions<MajorDocument>
+        {
+            ReturnDocument = ReturnDocument.After
+        };
+
+        var updatedDocument =
+            await _majors.FindOneAndReplaceAsync(filter, major, options, cancellationToken);
+
+        return updatedDocument;
+    }
 }
