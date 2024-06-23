@@ -58,7 +58,7 @@ public class EctsSubjectRepository : IEctsSubjectRepository
         (await _ectsSubjects.DistinctAsync<string>( $"{language}.major", DegreeFilter(degree),cancellationToken: cancellationToken)).ToEnumerable();
     
     public async Task<IEnumerable<string?>?> GetSpecialities(Degree degree, string major, Language language, CancellationToken cancellationToken)
-        => (await _ectsSubjects.DistinctAsync<string>($"{language}.subject", DegreeFilter(degree) & MajorOrSpecialityFilter(major, null, language), cancellationToken: cancellationToken)).ToEnumerable();
+        => (await _ectsSubjects.DistinctAsync<string>($"{language}.speciality", DegreeFilter(degree) & MajorOrSpecialityFilter(major, null, language), cancellationToken: cancellationToken)).ToEnumerable();
     
     public async Task<IEnumerable<EctsSubjectDocument>?> GetSubjectsByMajor(EctsSubjectRequest ectsSubject, CancellationToken cancellationToken)
     {
